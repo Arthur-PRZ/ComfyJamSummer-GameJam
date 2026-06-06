@@ -1,0 +1,9 @@
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+*.xcodeproj
+*.xcworkspace
+.vscode/
+.vs/
+*.sln

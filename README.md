@@ -9,3 +9,8 @@
 | 2D Artist | https://www.artstation.com/santakooki
 | 2D Artist | TBD
 | Composer | TBD
+
+
+
+
+
