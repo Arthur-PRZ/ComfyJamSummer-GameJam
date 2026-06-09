@@ -6,30 +6,32 @@
 // Sets default values
 AMoveableSprite::AMoveableSprite()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+    root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+    RootComponent = root;
+    hitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
+    sprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
+    hitBox->SetupAttachment(root);
+    sprite->SetupAttachment(root);
 
-	root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	RootComponent = root;
+    // Le sprite ne doit pas intercepter le clic à la place du hitBox
+    sprite->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	hitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
-	sprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Sprite"));
-
-	hitBox->SetupAttachment(root);	
-	sprite->SetupAttachment(root);	
-
+    // hitBox = à la fois cliquable (Visibility) et overlap avec le fillHitBox du blender
+    hitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    hitBox->SetCollisionObjectType(ECC_WorldDynamic);
+    hitBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+    hitBox->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);    // pour GetHitResultUnderCursor
+    hitBox->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); // pour overlaper le blender
+    hitBox->SetGenerateOverlapEvents(true);
 }
 
 // Called when the game starts or when spawned
 void AMoveableSprite::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
 void AMoveableSprite::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
+    Super::Tick(DeltaTime);
 }
