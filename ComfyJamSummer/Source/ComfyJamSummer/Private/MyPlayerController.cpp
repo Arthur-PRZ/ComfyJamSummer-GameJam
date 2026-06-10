@@ -2,6 +2,7 @@
 
 
 #include "MyPlayerController.h"
+#include "Ingredients.h"
 
 void AMyPlayerController::BeginPlay()
 {
@@ -28,11 +29,22 @@ void AMyPlayerController::OnClickPressed()
     FHitResult Hit;
     GetHitResultUnderCursor(ECC_Visibility, false, Hit);
     if (Hit.GetActor())
+	{
         SelectedActor = Hit.GetActor();
+
+		if (AIngredients* Ingredient = Cast<AIngredients>(SelectedActor))
+			Ingredient->OnGrabbed();
+
+		FVector WorldLocation, WorldDirection;
+		if (DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
+			GrabOffset = SelectedActor->GetActorLocation() - WorldLocation;
+	}
 }
 
 void AMyPlayerController::OnClickReleased()
 {
+	if (AIngredients* Ingredient = Cast<AIngredients>(SelectedActor))
+		Ingredient->OnReleased();
     SelectedActor = nullptr;
 }
 
@@ -46,10 +58,9 @@ void AMyPlayerController::Tick(float DeltaTime)
     FVector WorldDirection;
     if (DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
     {
-        // On garde Y (l'axe de profondeur) fixe, on bouge X/Z dans le plan du jeu
         FVector NewLocation = SelectedActor->GetActorLocation();
-        NewLocation.X = WorldLocation.X;
-        NewLocation.Z = WorldLocation.Z;
+        NewLocation.X = WorldLocation.X + GrabOffset.X;
+        NewLocation.Z = WorldLocation.Z + GrabOffset.Z;
         SelectedActor->SetActorLocation(NewLocation);
     }
 }

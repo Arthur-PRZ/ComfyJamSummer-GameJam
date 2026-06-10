@@ -15,10 +15,10 @@ class COMFYJAMSUMMER_API AIngredients : public AMoveableSprite
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(VisibleAnywhere);
+	UPROPERTY(VisibleAnywhere)
 	UPaperSpriteComponent *fillSprite;
 
-	UPROPERTY(EditAnywhere);
+	UPROPERTY(EditAnywhere)
 	EIngredientsTypes	ingredientType;
 
 	public:
@@ -26,4 +26,10 @@ class COMFYJAMSUMMER_API AIngredients : public AMoveableSprite
 	AIngredients();
 	
 	const EIngredientsTypes &getIngredientType() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Ingredient")
+    void OnGrabbed();
+
+    UFUNCTION(BlueprintCallable, Category = "Ingredient")
+    void OnReleased();
 };
