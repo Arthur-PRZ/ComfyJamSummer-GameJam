@@ -30,7 +30,7 @@ void AMyPlayerController::OnClickPressed()
 
     if (Hit.GetActor())
     {
-        if (Hit.GetComponent()->GetName() == TEXT("HitBox"))
+        if (!Hit.GetActor()->IsA(ABlender::StaticClass()))
             SelectedActor = Hit.GetActor();
     }
 }
@@ -50,13 +50,9 @@ void AMyPlayerController::Tick(float DeltaTime)
     FVector WorldDirection;
     if (DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
     {
-        AMoveableSprite *moveableActor = Cast<AMoveableSprite>(SelectedActor);
-        if(moveableActor)
-        {
-            FVector NewLocation = moveableActor->GetMoveable()->GetComponentLocation();
-            NewLocation.X = WorldLocation.X;
-            NewLocation.Z = WorldLocation.Z;
-            moveableActor->GetMoveable()->SetWorldLocation(NewLocation);
-        } 
+        FVector NewLocation = SelectedActor->GetActorLocation();
+        NewLocation.X = WorldLocation.X;
+        NewLocation.Z = WorldLocation.Z;
+        SelectedActor->SetActorLocation(NewLocation);
     }
 }

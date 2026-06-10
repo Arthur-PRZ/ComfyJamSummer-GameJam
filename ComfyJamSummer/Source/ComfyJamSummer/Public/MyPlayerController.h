@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Engine/HitResult.h"
 #include "MoveableSprite.h"
+#include "Blender.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "MyPlayerController.generated.h"

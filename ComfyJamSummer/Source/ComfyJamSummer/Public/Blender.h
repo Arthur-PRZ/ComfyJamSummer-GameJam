@@ -3,44 +3,50 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MoveableSprite.h"
 #include "IngredientsTypes.h"
 #include "Ingredients.h"
+#include "BlenderTop.h"
+#include "Kismet/GameplayStatics.h"
 #include "Blender.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class COMFYJAMSUMMER_API ABlender : public AMoveableSprite
+class COMFYJAMSUMMER_API ABlender : public AActor
 {
 	GENERATED_BODY()
 	
 	private:
 
-	UPROPERTY()
-	TArray<EIngredientsTypes> currentIngredients;
 
 	UFUNCTION()
-	void OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
+	void OnTopTouchBottom(UPrimitiveComponent* OverlappedComp,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
+
+	bool ContainsRecipe(const TArray<EIngredientsTypes>& Recipe);
+
 	public:
 
 	ABlender();
 	virtual void BeginPlay() override;
-	UPROPERTY(VisibleAnywhere)
-	UBoxComponent *fillHitBox;
+	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleAnywhere)
-	UBoxComponent *blenderHitBox;
+	USceneComponent *root;
+
+	UPROPERTY()
+	ABlenderTop* blenderTopRef;
 
 	UPROPERTY(VisibleAnywhere)
-	USceneComponent *blender;
+	UBoxComponent *hitBox;
 
 	UPROPERTY(VisibleAnywhere)
 	UPaperSpriteComponent *completeBlenderSprite;
