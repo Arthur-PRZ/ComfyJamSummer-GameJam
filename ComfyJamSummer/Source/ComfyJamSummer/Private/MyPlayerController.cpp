@@ -27,8 +27,12 @@ void AMyPlayerController::OnClickPressed()
 {
     FHitResult Hit;
     GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
     if (Hit.GetActor())
-        SelectedActor = Hit.GetActor();
+    {
+        if (Hit.GetComponent()->GetName() == TEXT("HitBox"))
+            SelectedActor = Hit.GetActor();
+    }
 }
 
 void AMyPlayerController::OnClickReleased()
@@ -46,10 +50,13 @@ void AMyPlayerController::Tick(float DeltaTime)
     FVector WorldDirection;
     if (DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
     {
-        // On garde Y (l'axe de profondeur) fixe, on bouge X/Z dans le plan du jeu
-        FVector NewLocation = SelectedActor->GetActorLocation();
-        NewLocation.X = WorldLocation.X;
-        NewLocation.Z = WorldLocation.Z;
-        SelectedActor->SetActorLocation(NewLocation);
+        AMoveableSprite *moveableActor = Cast<AMoveableSprite>(SelectedActor);
+        if(moveableActor)
+        {
+            FVector NewLocation = moveableActor->GetMoveable()->GetComponentLocation();
+            NewLocation.X = WorldLocation.X;
+            NewLocation.Z = WorldLocation.Z;
+            moveableActor->GetMoveable()->SetWorldLocation(NewLocation);
+        } 
     }
 }
