@@ -5,24 +5,38 @@
 
 ABlender::ABlender()
 {
+    completeBlenderSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("CompliteBlenderSprite"));
+    completeBlenderSprite->SetupAttachment(root);
+
+    blender = CreateDefaultSubobject<USceneComponent>(TEXT("Blender"));
+    blender->SetupAttachment(root);
+
     fillHitBox = CreateDefaultSubobject<UBoxComponent>("FillHitBox");
-    fillHitBox->SetupAttachment(root);
+    blenderHitBox = CreateDefaultSubobject<UBoxComponent>("BlenderHitBox");
+    blenderSprite = CreateDefaultSubobject<UPaperSpriteComponent>("BlenderSprite");
+
+    fillHitBox->SetupAttachment(moveable);
+    blenderHitBox->SetupAttachment(blender);
+    blenderSprite->SetupAttachment(blender);
 
     fillHitBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     fillHitBox->SetCollisionObjectType(ECC_WorldDynamic);
     fillHitBox->SetCollisionResponseToAllChannels(ECR_Ignore);
-    fillHitBox->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); // overlap avec ingrédient
+    fillHitBox->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); 
     fillHitBox->SetGenerateOverlapEvents(true);
     fillHitBox->OnComponentBeginOverlap.AddDynamic(this, &ABlender::OnIngredientOverlap);
+
+    blenderHitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    blenderHitBox->SetCollisionObjectType(ECC_WorldStatic);
+    blenderHitBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+    blenderHitBox->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+    blenderHitBox->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
+    blenderHitBox->SetGenerateOverlapEvents(true);
 }
 
 void ABlender::BeginPlay()
 {
     Super::BeginPlay();
-    UE_LOG(LogTemp, Warning, TEXT("FillHitBox: enabled=%d extent=%s overlap=%d"),
-        (int)fillHitBox->GetCollisionEnabled(),
-        *fillHitBox->GetUnscaledBoxExtent().ToString(),
-        fillHitBox->GetGenerateOverlapEvents());
 }
 
 void ABlender::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
@@ -32,8 +46,7 @@ void ABlender::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-    UE_LOG(LogTemp, Warning, TEXT("OVERLAP FIRED: %s / comp=%s"),
-        *GetNameSafe(OtherActor),*GetNameSafe(OtherComp));
+
     if (OtherComp->GetName() != TEXT("HitBox"))
         return;
     UE_LOG(LogTemp, Warning, TEXT("TOUCHE"));

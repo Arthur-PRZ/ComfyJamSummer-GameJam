@@ -36,5 +36,15 @@ class COMFYJAMSUMMER_API ABlender : public AMoveableSprite
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent *fillHitBox;
 
+	UPROPERTY(VisibleAnywhere)
+	UBoxComponent *blenderHitBox;
 
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent *blender;
+
+	UPROPERTY(VisibleAnywhere)
+	UPaperSpriteComponent *completeBlenderSprite;
+
+	UPROPERTY(VisibleAnywhere)
+	UPaperSpriteComponent *blenderSprite;
 };
