@@ -7,6 +7,10 @@
 
 AIngredients::AIngredients()
 {
+    fillSprite = CreateDefaultSubobject<UPaperSpriteComponent>("FillSprite");
+    fillSprite->SetupAttachment(moveable);
+    fillSprite->SetHiddenInGame(true);
+
     hitBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     hitBox->SetCollisionObjectType(ECC_WorldDynamic);
     hitBox->SetCollisionResponseToAllChannels(ECR_Ignore);

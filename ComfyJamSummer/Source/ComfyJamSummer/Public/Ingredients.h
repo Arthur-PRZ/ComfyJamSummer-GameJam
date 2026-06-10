@@ -15,7 +15,7 @@ class COMFYJAMSUMMER_API AIngredients : public AMoveableSprite
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	UPaperSpriteComponent *fillSprite;
 
 	UPROPERTY(EditAnywhere)

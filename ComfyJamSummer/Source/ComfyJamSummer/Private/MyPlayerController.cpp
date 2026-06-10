@@ -28,16 +28,21 @@ void AMyPlayerController::OnClickPressed()
 {
     FHitResult Hit;
     GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
     if (Hit.GetActor())
 	{
-        SelectedActor = Hit.GetActor();
+		if (Hit.GetComponent()->GetName() == TEXT("HitBox"))
+		{
+			SelectedActor = Hit.GetActor();
 
-		if (AIngredients* Ingredient = Cast<AIngredients>(SelectedActor))
-			Ingredient->OnGrabbed();
+			if (AIngredients* Ingredient = Cast<AIngredients>(SelectedActor))
+				Ingredient->OnGrabbed();
 
-		FVector WorldLocation, WorldDirection;
-		if (DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
-			GrabOffset = SelectedActor->GetActorLocation() - WorldLocation;
+			FVector WorldLocation, WorldDirection;
+			if (DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
+				GrabOffset = SelectedActor->GetActorLocation() - WorldLocation;
+
+		}
 	}
 }
 
@@ -58,9 +63,13 @@ void AMyPlayerController::Tick(float DeltaTime)
     FVector WorldDirection;
     if (DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
     {
-        FVector NewLocation = SelectedActor->GetActorLocation();
-        NewLocation.X = WorldLocation.X + GrabOffset.X;
-        NewLocation.Z = WorldLocation.Z + GrabOffset.Z;
-        SelectedActor->SetActorLocation(NewLocation);
+        AMoveableSprite *moveableActor = Cast<AMoveableSprite>(SelectedActor);
+        if(moveableActor)
+        {
+            FVector NewLocation = moveableActor->GetMoveable()->GetComponentLocation();
+       		NewLocation.X = WorldLocation.X + GrabOffset.X;
+        	NewLocation.Z = WorldLocation.Z + GrabOffset.Z;
+            moveableActor->GetMoveable()->SetWorldLocation(NewLocation);
+        } 
     }
 }
