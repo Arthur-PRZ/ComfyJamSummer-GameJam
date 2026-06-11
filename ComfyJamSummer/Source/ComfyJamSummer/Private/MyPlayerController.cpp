@@ -38,7 +38,6 @@ void AMyPlayerController::OnClickPressed()
                 ABlender* blender = Cast<ABlender>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlender::StaticClass()));
                 if (blender->IsBlenderFusion())
                 {
-                    UE_LOG(LogTemp, Warning, TEXT("FUSION CANCELED"));
                     blender->isBlenderFusionFalse();
                 }
             }
