@@ -20,7 +20,7 @@ class COMFYJAMSUMMER_API ABlender : public AActor
 	private:
 
 	bool isOverBlender = false;
-
+	bool isBlenderFusion = false;
 	// UFUNCTION()
 	// void OnTopTouchBottom(UPrimitiveComponent* OverlappedComp,
 	// 	AActor* OtherActor,
@@ -53,7 +53,11 @@ class COMFYJAMSUMMER_API ABlender : public AActor
 	public:
 
 	bool IsOverBlender() const;
+	bool IsBlenderFusion() const;
+	void isBlenderFusionFalse();
 
+	UFUNCTION()
+	void FusionBlender();
 
 	ABlender();
 	virtual void BeginPlay() override;

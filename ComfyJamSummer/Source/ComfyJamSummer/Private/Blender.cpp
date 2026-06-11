@@ -38,6 +38,16 @@ bool ABlender::IsOverBlender() const
     return isOverBlender;
 }
 
+bool ABlender::IsBlenderFusion() const
+{
+    return isBlenderFusion;
+}
+
+void ABlender::isBlenderFusionFalse()
+{
+    isBlenderFusion = false;
+}
+
 bool ABlender::ContainsRecipe(const TArray<EIngredientsTypes>& recipe)
 {
     const TArray<EIngredientsTypes>& allIngredients = blenderTopRef->getCurrentIngredients();
@@ -70,7 +80,7 @@ void ABlender::OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPre
         EIngredientsTypes::cocoMilk
     };
 
-    if (ButtonPressed == EKeys::LeftMouseButton || ButtonPressed == EKeys::RightMouseButton)
+    if (ButtonPressed == EKeys::LeftMouseButton && isBlenderFusion)
     {
         if (blenderTopRef->getCurrentIngredients().IsEmpty())
         {
@@ -85,6 +95,26 @@ void ABlender::OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPre
             UE_LOG(LogTemp, Warning, TEXT("CEST QUOI CE TRUC"));
         blenderTopRef->clearCurrentIngredients();
     }
+}
+
+void ABlender::FusionBlender()
+{
+    isBlenderFusion = true;
+
+    TArray<AActor*> overlappingActors;
+    GetOverlappingActors(overlappingActors, ABlenderTop::StaticClass());
+
+    if (overlappingActors.Num() == 0)
+        return ;
+    
+    ABlenderTop *blenderTop = Cast<ABlenderTop>(overlappingActors[0]);
+
+    if (!blenderTop)
+        return ;
+    
+    FVector blenderTopLocation = GetActorLocation();
+    blenderTopLocation.Z += 1.5;  // changer la position de blenderTop
+    blenderTop->SetActorLocation(blenderTopLocation);
 }
 
 void ABlender::OnTopEnter(
@@ -110,6 +140,9 @@ void ABlender::OnTopLeaveBottom(
 
     if (Cast<ABlenderTop>(OtherActor))
     {
+        if (isBlenderFusion)
+            isBlenderFusion = false;
         isOverBlender = false;
     }
+
 }

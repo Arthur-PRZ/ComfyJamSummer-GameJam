@@ -33,6 +33,16 @@ void AMyPlayerController::OnClickPressed()
 	{
 		if (Hit.GetComponent()->GetName() == TEXT("HitBox"))
 		{
+            if (Hit.GetActor()->IsA(ABlenderTop::StaticClass()))
+            {
+                ABlender* blender = Cast<ABlender>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlender::StaticClass()));
+                if (blender->IsBlenderFusion())
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("FUSION CANCELED"));
+                    blender->isBlenderFusionFalse();
+                }
+            }
+
 			if (!Hit.GetActor()->IsA(ABlender::StaticClass()))
                 SelectedActor = Hit.GetActor();
             else
@@ -55,7 +65,9 @@ void AMyPlayerController::OnClickReleased()
     if (ABlender* blender = Cast<ABlender>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlender::StaticClass())))
     {
         if (blender->IsOverBlender())
-            UE_LOG(LogTemp, Warning, TEXT("FUUUUUUUSIONNN"));
+        {
+            blender->FusionBlender();
+        }
     }
     SelectedActor = nullptr;
 }
