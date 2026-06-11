@@ -3,47 +3,77 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MoveableSprite.h"
 #include "IngredientsTypes.h"
 #include "Ingredients.h"
+#include "BlenderTop.h"
+#include "Kismet/GameplayStatics.h"
 #include "Blender.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class COMFYJAMSUMMER_API ABlender : public AMoveableSprite
+class COMFYJAMSUMMER_API ABlender : public AActor
 {
 	GENERATED_BODY()
 	
 	private:
 
-	UPROPERTY()
-	TArray<EIngredientsTypes> currentIngredients;
+	bool isOverBlender = false;
+	bool isBlenderFusion = false;
+	FTimerHandle blenderTimer;
+
+	// UFUNCTION()
+	// void OnTopTouchBottom(UPrimitiveComponent* OverlappedComp,
+	// 	AActor* OtherActor,
+	// 	UPrimitiveComponent* OtherComp,
+	// 	int32 OtherBodyIndex,
+	// 	bool bFromSweep,
+	// 	const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
+	void OnTopEnter(
+		UPrimitiveComponent* OverlappedComp,
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void OnTopLeaveBottom(
+		UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex);
+
+	void BlenderStart();
+
+	UFUNCTION()
+	void OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
+
+	bool ContainsRecipe(const TArray<EIngredientsTypes>& Recipe);
+
 	public:
+
+	bool IsOverBlender() const;
+	bool IsBlenderFusion() const;
+	void isBlenderFusionFalse();
+
+	UFUNCTION()
+	void FusionBlender();
 
 	ABlender();
 	virtual void BeginPlay() override;
-	UPROPERTY(VisibleAnywhere)
-	UBoxComponent *fillHitBox;
 
 	UPROPERTY(VisibleAnywhere)
-	UBoxComponent *blenderHitBox;
+	USceneComponent *root;
+
+	UPROPERTY()
+	ABlenderTop* blenderTopRef;
 
 	UPROPERTY(VisibleAnywhere)
-	USceneComponent *blender;
-
-	UPROPERTY(VisibleAnywhere)
-	UPaperSpriteComponent *completeBlenderSprite;
+	UBoxComponent *hitBox;
 
 	UPROPERTY(VisibleAnywhere)
 	UPaperSpriteComponent *blenderSprite;

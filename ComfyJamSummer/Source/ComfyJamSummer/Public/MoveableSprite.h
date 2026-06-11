@@ -29,13 +29,9 @@ class COMFYJAMSUMMER_API AMoveableSprite : public AActor
 
 		UPROPERTY(VisibleAnywhere)
 		USceneComponent *root;
-
-		UPROPERTY(VisibleAnywhere)
-		USceneComponent *moveable;
 		
 	public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-    USceneComponent* GetMoveable() const;
 
 };

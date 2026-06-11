@@ -5,63 +5,152 @@
 
 ABlender::ABlender()
 {
-    completeBlenderSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("CompliteBlenderSprite"));
-    completeBlenderSprite->SetupAttachment(root);
+    root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+    RootComponent = root;
 
-    blender = CreateDefaultSubobject<USceneComponent>(TEXT("Blender"));
-    blender->SetupAttachment(root);
-
-    fillHitBox = CreateDefaultSubobject<UBoxComponent>("FillHitBox");
-    blenderHitBox = CreateDefaultSubobject<UBoxComponent>("BlenderHitBox");
+    hitBox = CreateDefaultSubobject<UBoxComponent>("HitBox");
     blenderSprite = CreateDefaultSubobject<UPaperSpriteComponent>("BlenderSprite");
 
-    fillHitBox->SetupAttachment(moveable);
-    blenderHitBox->SetupAttachment(blender);
-    blenderSprite->SetupAttachment(blender);
+    hitBox->SetupAttachment(root);
+    blenderSprite->SetupAttachment(root);
 
-    fillHitBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-    fillHitBox->SetCollisionObjectType(ECC_WorldDynamic);
-    fillHitBox->SetCollisionResponseToAllChannels(ECR_Ignore);
-    fillHitBox->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap); 
-    fillHitBox->SetGenerateOverlapEvents(true);
-    fillHitBox->OnComponentBeginOverlap.AddDynamic(this, &ABlender::OnIngredientOverlap);
-
-    blenderHitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-    blenderHitBox->SetCollisionObjectType(ECC_WorldStatic);
-    blenderHitBox->SetCollisionResponseToAllChannels(ECR_Ignore);
-    blenderHitBox->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-    blenderHitBox->SetCollisionResponseToChannel(ECC_Camera, ECR_Block);
-    blenderHitBox->SetGenerateOverlapEvents(true);
+    hitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    hitBox->SetCollisionObjectType(ECC_WorldStatic);
+    hitBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+    hitBox->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+    hitBox->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
+    hitBox->SetGenerateOverlapEvents(true);
+    hitBox->OnClicked.AddDynamic(this, &ABlender::OnBlenderClicked);
+    // hitBox->OnComponentBeginOverlap.AddDynamic(this, &ABlender::OnTopTouchBottom);
+    hitBox->OnComponentBeginOverlap.AddDynamic(this, &ABlender::OnTopEnter);
+    hitBox->OnComponentEndOverlap.AddDynamic(this, &ABlender::OnTopLeaveBottom);
 }
 
 void ABlender::BeginPlay()
 {
     Super::BeginPlay();
+
+    blenderTopRef = Cast<ABlenderTop>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlenderTop::StaticClass()));
+    isBlenderFusion = true;
 }
 
-void ABlender::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult)
+bool ABlender::IsOverBlender() const
 {
+    return isOverBlender;
+}
 
-    if (OtherComp->GetName() != TEXT("HitBox"))
-        return;
-    UE_LOG(LogTemp, Warning, TEXT("TOUCHE"));
-    if (OtherActor && OtherActor->IsA(AIngredients::StaticClass()))
+bool ABlender::IsBlenderFusion() const
+{
+    return isBlenderFusion;
+}
+
+void ABlender::isBlenderFusionFalse()
+{
+    isBlenderFusion = false;
+    GetWorld()->GetTimerManager().ClearTimer(blenderTimer);
+    UE_LOG(LogTemp, Warning, TEXT("BLENDER ARRETE"));
+}
+
+bool ABlender::ContainsRecipe(const TArray<EIngredientsTypes>& recipe)
+{
+    const TArray<EIngredientsTypes>& allIngredients = blenderTopRef->getCurrentIngredients();
+    if (recipe.Num() != allIngredients.Num())
+        return false;
+    for (EIngredientsTypes ingredients : recipe)
     {
-        AIngredients *ingredient = Cast<AIngredients>(OtherActor);
-        EIngredientsTypes ingredientType = ingredient->getIngredientType();
+        if (!allIngredients.Contains(ingredients))
+            return false;
+    }
+    return true;
+}
 
-        UE_LOG(LogTemp, Warning, TEXT("TOUCHE INGREDIENT"));
-        if (!currentIngredients.Contains(ingredientType))
+void ABlender::BlenderStart()
+{
+    TArray<EIngredientsTypes> pinaColadaRecipe =
+    {
+        EIngredientsTypes::ananas,
+        EIngredientsTypes::rhum,
+        EIngredientsTypes::cocoMilk
+    };
+
+    if (ContainsRecipe(pinaColadaRecipe))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("PINA COLADA PRETE !!!"));
+    }
+    else
+        UE_LOG(LogTemp, Warning, TEXT("CEST QUOI CE TRUC"));
+    blenderTopRef->clearCurrentIngredients();
+}
+
+void ABlender::OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
+{
+    if (ButtonPressed == EKeys::LeftMouseButton && isBlenderFusion)
+    {
+        if (blenderTopRef->getCurrentIngredients().IsEmpty())
         {
-            currentIngredients.Add(ingredientType);
-            UE_LOG(LogTemp, Warning, TEXT("INGREDIENT ADDED"));
+            UE_LOG(LogTemp, Warning, TEXT("CEST VIDE"));
+            return ;
         }
         else
-            UE_LOG(LogTemp, Warning, TEXT("INGREDIENT ALREADY THERE"));
+        {
+            UE_LOG(LogTemp, Warning, TEXT("BRRRRRR..."));
+            GetWorld()->GetTimerManager().SetTimer(blenderTimer, this, &ABlender::BlenderStart, 5.0f, false);
+        }
     }
+    else
+        UE_LOG(LogTemp, Warning, TEXT("BLENDER MISSING"));
+
+}
+
+void ABlender::FusionBlender()
+{
+    isBlenderFusion = true;
+
+    TArray<AActor*> overlappingActors;
+    GetOverlappingActors(overlappingActors, ABlenderTop::StaticClass());
+
+    if (overlappingActors.Num() == 0)
+        return ;
+    
+    ABlenderTop *blenderTop = Cast<ABlenderTop>(overlappingActors[0]);
+
+    if (!blenderTop)
+        return ;
+    
+    FVector blenderTopLocation = GetActorLocation();
+    blenderTopLocation.Z += 1.5;  // changer la position de blenderTop
+    blenderTop->SetActorLocation(blenderTopLocation);
+}
+
+void ABlender::OnTopEnter(
+    UPrimitiveComponent* OverlappedComp,
+    AActor* OtherActor,
+    UPrimitiveComponent* OtherComp,
+    int32 OtherBodyIndex,
+    bool bFromSweep,
+    const FHitResult& SweepResult)
+{
+    if (Cast<ABlenderTop>(OtherActor))
+    {
+        isOverBlender = true;
+    }
+}
+
+void ABlender::OnTopLeaveBottom(
+    UPrimitiveComponent* OverlappedComp,
+    AActor* OtherActor,
+    UPrimitiveComponent* OtherComp,
+    int32 OtherBodyIndex)
+{
+
+    if (Cast<ABlenderTop>(OtherActor))
+    {
+        if (isBlenderFusion)
+        {
+            isBlenderFusion = false;
+            GetWorld()->GetTimerManager().ClearTimer(blenderTimer);
+        }
+        isOverBlender = false;
+    }
+
 }

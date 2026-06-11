@@ -35,7 +35,17 @@ void AMyPlayerController::OnClickPressed()
         {
             Ingredient->OnGrabbed();
         }
+        if (SelectedActor->IsA(ABlenderTop::StaticClass()))
+        {
+            ABlender* blender = Cast<ABlender>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlender::StaticClass()));
+            if (blender->IsBlenderFusion())
+            {
+                blender->isBlenderFusionFalse();
+            }
+        }
 
+		if (SelectedActor->IsA(ABlender::StaticClass()))
+                return ;
         FVector WorldLocation, WorldDirection;
         if (DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
             GrabOffset = SelectedActor->GetActorLocation() - WorldLocation;
@@ -46,6 +56,13 @@ void AMyPlayerController::OnClickReleased()
 {
 	if (AIngredients* Ingredient = Cast<AIngredients>(SelectedActor))
 		Ingredient->OnReleased();
+    if (ABlender* blender = Cast<ABlender>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlender::StaticClass())))
+    {
+        if (blender->IsOverBlender())
+        {
+            blender->FusionBlender();
+        }
+    }
     SelectedActor = nullptr;
 }
 
