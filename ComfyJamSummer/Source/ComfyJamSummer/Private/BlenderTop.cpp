@@ -77,12 +77,12 @@ void ABlenderTop::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
         {
             if (ingredientType == EIngredientsTypes::gasoline)
             {
-                UE_LOG(LogTemp, Warning, TEXT("PUTING GASOLINEEE"));
+                UE_LOG(LogTemp, Warning, TEXT("PUTING GASOLINEEE..."));
                 GetWorld()->GetTimerManager().SetTimer(IngredientTimer, this, &ABlenderTop::ValidateIngredient, 3.0f, false);
             }
             else
             {
-                UE_LOG(LogTemp, Warning, TEXT("PUTING INGREDIENT"));
+                UE_LOG(LogTemp, Warning, TEXT("PUTING INGREDIENT..."));
                 GetWorld()->GetTimerManager().SetTimer(IngredientTimer, this, &ABlenderTop::ValidateIngredient, 1.0f, false);
             }
 
