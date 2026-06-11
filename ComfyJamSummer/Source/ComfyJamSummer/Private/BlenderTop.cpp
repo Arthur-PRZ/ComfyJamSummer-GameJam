@@ -16,6 +16,8 @@ ABlenderTop::ABlenderTop()
     fillHitBox->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
     fillHitBox->SetGenerateOverlapEvents(true);
     fillHitBox->OnComponentBeginOverlap.AddDynamic(this, &ABlenderTop::OnIngredientOverlap);
+    fillHitBox->OnComponentEndOverlap.AddDynamic(this, &ABlenderTop::OnIngredientEndOverlap);
+
 
     hitBox->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
 }
@@ -31,6 +33,27 @@ void ABlenderTop::clearCurrentIngredients()
     currentIngredients.Empty();
 }
 
+void ABlenderTop::ValidateIngredient()
+{
+    EIngredientsTypes ingredientType = pendingIngredient->getIngredientType();
+
+    currentIngredients.Add(ingredientType);
+    UE_LOG(LogTemp, Warning, TEXT("INGREDIENT ADDED"));
+
+}
+
+void ABlenderTop::OnIngredientEndOverlap(UPrimitiveComponent* OverlappedComp,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+    if (OtherActor == pendingIngredient)
+    {
+        GetWorld()->GetTimerManager().ClearTimer(IngredientTimer);
+        pendingIngredient = nullptr;
+    }
+}
+
 void ABlenderTop::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -43,14 +66,26 @@ void ABlenderTop::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
     if (OtherActor && OtherActor->IsA(AIngredients::StaticClass()))
     {
         AIngredients *ingredient = Cast<AIngredients>(OtherActor);
-        EIngredientsTypes ingredientType = ingredient->getIngredientType();
+        pendingIngredient = ingredient;
+        EIngredientsTypes ingredientType = pendingIngredient->getIngredientType();
 
-        if (!currentIngredients.Contains(ingredientType))
+        if (currentIngredients.Contains(ingredientType))
         {
-            currentIngredients.Add(ingredientType);
-            UE_LOG(LogTemp, Warning, TEXT("INGREDIENT ADDED"));
+            UE_LOG(LogTemp, Warning, TEXT("INGREDIENT ALREADY THERE"));
         }
         else
-            UE_LOG(LogTemp, Warning, TEXT("INGREDIENT ALREADY THERE"));
+        {
+            if (ingredientType == EIngredientsTypes::gasoline)
+            {
+                UE_LOG(LogTemp, Warning, TEXT("PUTING GASOLINEEE"));
+                GetWorld()->GetTimerManager().SetTimer(IngredientTimer, this, &ABlenderTop::ValidateIngredient, 3.0f, false);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("PUTING INGREDIENT"));
+                GetWorld()->GetTimerManager().SetTimer(IngredientTimer, this, &ABlenderTop::ValidateIngredient, 1.0f, false);
+            }
+
+        }
     }
 }
