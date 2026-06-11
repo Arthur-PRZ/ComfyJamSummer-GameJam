@@ -6,6 +6,7 @@
 #include "MoveableSprite.h"
 #include "IngredientsTypes.h"
 #include "Ingredients.h"
+#include "Drinks.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/WidgetComponent.h"
@@ -25,6 +26,7 @@ class COMFYJAMSUMMER_API ABlenderTop : public AMoveableSprite
 	TArray<EIngredientsTypes> currentIngredients;
 	AIngredients *pendingIngredient = nullptr;
 	FTimerHandle IngredientTimer;
+	EDrinks drink;
 
 	UFUNCTION()
 	void OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
@@ -47,6 +49,9 @@ class COMFYJAMSUMMER_API ABlenderTop : public AMoveableSprite
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	void pinaColadaDrink();
+	EDrinks getDrink() const;
 
 	ABlenderTop();
 	UPROPERTY(VisibleAnywhere)

@@ -130,7 +130,7 @@ void ABlender::BlenderStart()
 
     if (ContainsRecipe(pinaColadaRecipe))
     {
-        UE_LOG(LogTemp, Warning, TEXT("PINA COLADA PRETE !!!"));
+        blenderTopRef->pinaColadaDrink();
     }
     else
         UE_LOG(LogTemp, Warning, TEXT("CEST QUOI CE TRUC"));

@@ -54,7 +54,16 @@ void ABlenderTop::ValidateIngredient()
 
     currentIngredients.Add(ingredientType);
     UE_LOG(LogTemp, Warning, TEXT("INGREDIENT ADDED"));
+}
 
+void ABlenderTop::pinaColadaDrink()
+{
+    drink = EDrinks::pinaColada;
+}
+
+EDrinks ABlenderTop::getDrink() const
+{
+    return drink;
 }
 
 void ABlenderTop::OnIngredientEndOverlap(UPrimitiveComponent* OverlappedComp,
