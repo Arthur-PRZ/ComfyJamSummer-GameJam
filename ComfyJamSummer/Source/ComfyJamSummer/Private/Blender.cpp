@@ -47,6 +47,8 @@ bool ABlender::IsBlenderFusion() const
 void ABlender::isBlenderFusionFalse()
 {
     isBlenderFusion = false;
+    GetWorld()->GetTimerManager().ClearTimer(blenderTimer);
+    UE_LOG(LogTemp, Warning, TEXT("BLENDER ARRETE"));
 }
 
 bool ABlender::ContainsRecipe(const TArray<EIngredientsTypes>& recipe)
@@ -62,7 +64,7 @@ bool ABlender::ContainsRecipe(const TArray<EIngredientsTypes>& recipe)
     return true;
 }
 
-void ABlender::OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
+void ABlender::BlenderStart()
 {
     TArray<EIngredientsTypes> pinaColadaRecipe =
     {
@@ -71,6 +73,17 @@ void ABlender::OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPre
         EIngredientsTypes::cocoMilk
     };
 
+    if (ContainsRecipe(pinaColadaRecipe))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("PINA COLADA PRETE !!!"));
+    }
+    else
+        UE_LOG(LogTemp, Warning, TEXT("CEST QUOI CE TRUC"));
+    blenderTopRef->clearCurrentIngredients();
+}
+
+void ABlender::OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
+{
     if (ButtonPressed == EKeys::LeftMouseButton && isBlenderFusion)
     {
         if (blenderTopRef->getCurrentIngredients().IsEmpty())
@@ -78,14 +91,15 @@ void ABlender::OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPre
             UE_LOG(LogTemp, Warning, TEXT("CEST VIDE"));
             return ;
         }
-        else if (ContainsRecipe(pinaColadaRecipe))
-        {
-            UE_LOG(LogTemp, Warning, TEXT("PINA COLADA PRETE !!!"));
-        }
         else
-            UE_LOG(LogTemp, Warning, TEXT("CEST QUOI CE TRUC"));
-        blenderTopRef->clearCurrentIngredients();
+        {
+            UE_LOG(LogTemp, Warning, TEXT("BRRRRRR..."));
+            GetWorld()->GetTimerManager().SetTimer(blenderTimer, this, &ABlender::BlenderStart, 5.0f, false);
+        }
     }
+    else
+        UE_LOG(LogTemp, Warning, TEXT("BLENDER MISSING"));
+
 }
 
 void ABlender::FusionBlender()
@@ -132,7 +146,10 @@ void ABlender::OnTopLeaveBottom(
     if (Cast<ABlenderTop>(OtherActor))
     {
         if (isBlenderFusion)
+        {
             isBlenderFusion = false;
+            GetWorld()->GetTimerManager().ClearTimer(blenderTimer);
+        }
         isOverBlender = false;
     }
 

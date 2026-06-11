@@ -21,6 +21,8 @@ class COMFYJAMSUMMER_API ABlender : public AActor
 
 	bool isOverBlender = false;
 	bool isBlenderFusion = false;
+	FTimerHandle blenderTimer;
+
 	// UFUNCTION()
 	// void OnTopTouchBottom(UPrimitiveComponent* OverlappedComp,
 	// 	AActor* OtherActor,
@@ -44,6 +46,8 @@ class COMFYJAMSUMMER_API ABlender : public AActor
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
+
+	void BlenderStart();
 
 	UFUNCTION()
 	void OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed);
