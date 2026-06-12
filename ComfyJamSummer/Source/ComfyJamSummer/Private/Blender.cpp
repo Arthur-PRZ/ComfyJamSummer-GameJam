@@ -33,8 +33,7 @@ ABlender::ABlender()
     timerWidgetInstance->SetRelativeLocation(FVector(0.f, 0.f, -25.f));
     timerWidgetInstance->SetDrawSize(FVector2D(400.f, 80.f));
     timerWidgetInstance->SetWorldScale3D(FVector(0.07f, 0.07f, 0.07f));
-    timerWidgetInstance->SetWorldRotation(FRotator(0.f, -90.f, 0.f));
-    
+    timerWidgetInstance->SetWorldRotation(FRotator(0.f, -90.f, 0.f)); 
 }
 
 void ABlender::BeginPlay()
@@ -133,7 +132,8 @@ void ABlender::BlenderStart()
         blenderTopRef->pinaColadaDrink();
     }
     else
-        UE_LOG(LogTemp, Warning, TEXT("CEST QUOI CE TRUC"));
+        blenderTopRef->badDrink();
+    UE_LOG(LogTemp, Warning, TEXT("TEST"));
     blenderTopRef->clearCurrentIngredients();
     isBlenderWorking = false;
 }

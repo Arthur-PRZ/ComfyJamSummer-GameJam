@@ -51,6 +51,7 @@ class COMFYJAMSUMMER_API ABlenderTop : public AMoveableSprite
 	virtual void Tick(float DeltaTime) override;
 
 	void pinaColadaDrink();
+	void badDrink();
 	EDrinks getDrink();
 
 	ABlenderTop();
