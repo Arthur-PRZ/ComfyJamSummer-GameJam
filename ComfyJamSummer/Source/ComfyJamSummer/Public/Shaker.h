@@ -10,7 +10,7 @@
 #include "IngredientsTypes.h"
 #include "MyPlayerController.h"
 #include "Ingredients.h"
-#include "Checker.generated.h"
+#include "Shaker.generated.h"
 
 
 class AIngredients;
@@ -18,7 +18,7 @@ class AIngredients;
  * 
  */
 UCLASS()
-class COMFYJAMSUMMER_API AChecker : public AMoveableSprite
+class COMFYJAMSUMMER_API AShaker : public AMoveableSprite
 {
 	GENERATED_BODY()
 	
@@ -54,12 +54,13 @@ class COMFYJAMSUMMER_API AChecker : public AMoveableSprite
 
 	public :
 
-	AChecker();
+	AShaker();
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	void resetDrink();
 
-	EDrinks getDrink();
+	EDrinks getDrink() const;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> timerWidgetClass;

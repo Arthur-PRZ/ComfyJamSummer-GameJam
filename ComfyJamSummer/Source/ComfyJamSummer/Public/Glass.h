@@ -7,12 +7,12 @@
 #include "Ingredients.h"
 #include "BlenderTop.h"
 #include "Drinks.h"
-#include "Checker.h"
+#include "Shaker.h"
 #include "Components/ProgressBar.h"
 #include "Components/WidgetComponent.h"
 #include "Glass.generated.h"
 
-class AChecker;
+class AShaker;
 class ABlenderTop;
 
 /**
@@ -27,7 +27,7 @@ class COMFYJAMSUMMER_API AGlass : public AMoveableSprite
 
 	EDrinks drink;
 	ABlenderTop *pendingBlender = nullptr;
-	AChecker *pendingShaker = nullptr;
+	AShaker *pendingShaker = nullptr;
 	FTimerHandle glassTimer;
 	float timerDuration;
 	bool isFill = false;

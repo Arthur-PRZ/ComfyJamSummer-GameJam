@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Checker.h"
+#include "Shaker.h"
 
-AChecker::AChecker()
+AShaker::AShaker()
 {
     PrimaryActorTick.bCanEverTick = true;
 
@@ -20,8 +20,8 @@ AChecker::AChecker()
     fillHitBox->SetCollisionResponseToAllChannels(ECR_Ignore);
     fillHitBox->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
     fillHitBox->SetGenerateOverlapEvents(true);
-    fillHitBox->OnComponentBeginOverlap.AddDynamic(this, &AChecker::OnIngredientOverlap);
-    fillHitBox->OnComponentEndOverlap.AddDynamic(this, &AChecker::OnIngredientEndOverlap);
+    fillHitBox->OnComponentBeginOverlap.AddDynamic(this, &AShaker::OnIngredientOverlap);
+    fillHitBox->OnComponentEndOverlap.AddDynamic(this, &AShaker::OnIngredientEndOverlap);
 
     timerWidgetInstance->SetWidgetSpace(EWidgetSpace::World);
     timerWidgetInstance->SetRelativeLocation(FVector(0.f, 0.f, 40.f));
@@ -31,7 +31,7 @@ AChecker::AChecker()
 
 }
 
-void AChecker::BeginPlay()
+void AShaker::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -40,7 +40,7 @@ void AChecker::BeginPlay()
     shakerOpenSprite->SetVisibility(false);
 }
 
-void AChecker::ValidateIngredient()
+void AShaker::ValidateIngredient()
 {
     EIngredientsTypes ingredientType = pendingIngredient->getIngredientType();
 
@@ -49,7 +49,7 @@ void AChecker::ValidateIngredient()
 }
 
 
-void AChecker::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
+void AShaker::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
@@ -58,7 +58,7 @@ void AChecker::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
 {
     ABlender* blender = Cast<ABlender>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlender::StaticClass()));
 
-    if (OtherComp->GetName() != TEXT("HitBox") || drink != EDrinks::noDrink || !pc->getIsDragging())
+    if (OtherComp->GetName() != TEXT("HitBox") || drink != EDrinks::noDrink || !pc->getIsDragging() || !pc->getIsDraggingShaker())
         return;
     if (OtherActor && OtherActor->IsA(AIngredients::StaticClass()))
     {
@@ -77,19 +77,19 @@ void AChecker::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
             {
                 UE_LOG(LogTemp, Warning, TEXT("PUTING GASOLINEEE..."));
                 timerDuration = 3.0f;
-                GetWorld()->GetTimerManager().SetTimer(IngredientTimer, this, &AChecker::ValidateIngredient, timerDuration, false);
+                GetWorld()->GetTimerManager().SetTimer(IngredientTimer, this, &AShaker::ValidateIngredient, timerDuration, false);
             }
             else
             {
                 timerDuration = 1.0f;
-                GetWorld()->GetTimerManager().SetTimer(IngredientTimer, this, &AChecker::ValidateIngredient, timerDuration, false);
+                GetWorld()->GetTimerManager().SetTimer(IngredientTimer, this, &AShaker::ValidateIngredient, timerDuration, false);
             }
 
         }
     }
 }
 
-void AChecker::OnIngredientEndOverlap(UPrimitiveComponent* OverlappedComp,
+void AShaker::OnIngredientEndOverlap(UPrimitiveComponent* OverlappedComp,
 	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
@@ -101,7 +101,7 @@ void AChecker::OnIngredientEndOverlap(UPrimitiveComponent* OverlappedComp,
     }
 }
 
-bool AChecker::ContainsRecipe(const TArray<EIngredientsTypes>& recipe)
+bool AShaker::ContainsRecipe(const TArray<EIngredientsTypes>& recipe)
 {
     if (recipe.Num() != currentIngredients.Num())
         return false;
@@ -113,7 +113,7 @@ bool AChecker::ContainsRecipe(const TArray<EIngredientsTypes>& recipe)
     return true;
 }
 
-void AChecker::makeDrink()
+void AShaker::makeDrink()
 {
     TArray<EIngredientsTypes> pinaColadaRecipe =
     {
@@ -133,15 +133,18 @@ void AChecker::makeDrink()
     sprite->SetVisibility(false);
 }
 
-EDrinks AChecker::getDrink()
+EDrinks AShaker::getDrink() const
 {
-    EDrinks temp = drink;
+    return drink;
+}
+
+void AShaker::resetDrink()
+{
     drink = EDrinks::noDrink;
-    return temp;
 }
 
 
-void AChecker::Tick(float DeltaTime)
+void AShaker::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
  
@@ -151,11 +154,11 @@ void AChecker::Tick(float DeltaTime)
         pc->GetMousePosition(CurrentMousePos.X, CurrentMousePos.Y);
 
         float Delta = FVector2D::Distance(CurrentMousePos, LastMousePos);
-        Delta = Delta / 15.f;
+        Delta = Delta / 20.f;
         ShakePower += Delta;
         LastMousePos = CurrentMousePos;
 
-        float ShakeThreshold = 300.f;
+        float ShakeThreshold = 500.f;
         if (ShakePower >= ShakeThreshold)
         {
             UE_LOG(LogTemp, Warning, TEXT("SHAKE COMPLETE!"));
@@ -164,7 +167,7 @@ void AChecker::Tick(float DeltaTime)
         }
     }
 
-    ShakePower = FMath::FInterpTo(ShakePower, 0.f, DeltaTime, 2.f);
+    ShakePower = FMath::FInterpTo(ShakePower, 0.f, DeltaTime, 0.5f);
     if (GetWorld()->GetTimerManager().IsTimerActive(IngredientTimer) && timerWidgetInstance)
     {
 

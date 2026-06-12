@@ -54,9 +54,12 @@ void AGlass::FillGlass()
         pinaColadaSprite->SetVisibility(true);
     if (pendingShaker)
     {
+        pendingShaker->resetDrink();
         pendingShaker->shakerOpenSprite->SetVisibility(false);
         pendingShaker->GetSprite()->SetVisibility(true); 
     }
+    else
+        pendingBlender->resetDrink();
 }
 
 void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
@@ -74,9 +77,9 @@ void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
         if (drink != EDrinks::noDrink)
             GetWorld()->GetTimerManager().SetTimer(glassTimer, this, &AGlass::FillGlass, timerDuration, false);
     }
-    else if (OtherActor && OtherActor->IsA(AChecker::StaticClass()) && isFill == false)
+    else if (OtherActor && OtherActor->IsA(AShaker::StaticClass()) && isFill == false)
     {
-        pendingShaker = Cast<AChecker>(OtherActor);
+        pendingShaker = Cast<AShaker>(OtherActor);
         drink = pendingShaker->getDrink();
 
         if (drink != EDrinks::noDrink)
@@ -95,7 +98,7 @@ void AGlass::OnBlenderEndOverlap(UPrimitiveComponent* OverlappedComp,
         GetWorld()->GetTimerManager().ClearTimer(glassTimer);
         pendingBlender = nullptr;
     }
-    else if (OtherActor == pendingBlender)
+    else if (OtherActor == pendingShaker)
     {
         GetWorld()->GetTimerManager().ClearTimer(glassTimer);
         pendingShaker  = nullptr;

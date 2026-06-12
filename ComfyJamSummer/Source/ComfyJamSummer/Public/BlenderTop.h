@@ -49,10 +49,11 @@ class COMFYJAMSUMMER_API ABlenderTop : public AMoveableSprite
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-
+	
+	void resetDrink();
 	void pinaColadaDrink();
 	void badDrink();
-	EDrinks getDrink();
+	EDrinks getDrink() const;
 
 	ABlenderTop();
 	UPROPERTY(VisibleAnywhere)

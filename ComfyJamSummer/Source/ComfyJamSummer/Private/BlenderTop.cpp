@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "BlenderTop.h"
 #include "Blender.h"
 #include "MyPlayerController.h"
-#include "BlenderTop.h"
 
 ABlenderTop::ABlenderTop()
 {
@@ -57,6 +57,11 @@ void ABlenderTop::ValidateIngredient()
     UE_LOG(LogTemp, Warning, TEXT("INGREDIENT ADDED"));
 }
 
+void ABlenderTop::resetDrink()
+{
+    drink = EDrinks::noDrink;
+}
+
 void ABlenderTop::pinaColadaDrink()
 {
     drink = EDrinks::pinaColada;
@@ -67,11 +72,9 @@ void ABlenderTop::badDrink()
     drink = EDrinks::badDrink;
 }
 
-EDrinks ABlenderTop::getDrink()
+EDrinks ABlenderTop::getDrink() const
 {
-    EDrinks temp = drink;
-    drink = EDrinks::noDrink;
-    return temp;
+    return drink;
 }
 
 void ABlenderTop::OnIngredientEndOverlap(UPrimitiveComponent* OverlappedComp,

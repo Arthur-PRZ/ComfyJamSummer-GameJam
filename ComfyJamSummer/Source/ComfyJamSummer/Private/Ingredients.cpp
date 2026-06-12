@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Ingredients.h"
 #include "Kismet/GameplayStatics.h"
 #include "Alien.h"
-#include "Ingredients.h"
 
 
 AIngredients::AIngredients()
