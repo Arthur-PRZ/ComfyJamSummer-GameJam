@@ -5,6 +5,10 @@
 #include "CoreMinimal.h"
 #include "MoveableSprite.h"
 #include "Ingredients.h"
+#include "BlenderTop.h"
+#include "Drinks.h"
+#include "Components/ProgressBar.h"
+#include "Components/WidgetComponent.h"
 #include "Glass.generated.h"
 
 /**
@@ -17,19 +21,52 @@ class COMFYJAMSUMMER_API AGlass : public AMoveableSprite
 	
 	private:
 
-	// UFUNCTION()
-	// void OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
-	// 	AActor* OtherActor,
-	// 	UPrimitiveComponent* OtherComp,
-	// 	int32 OtherBodyIndex,
-	// 	bool bFromSweep,
-	// 	const FHitResult& SweepResult);
+	EDrinks drink;
+	ABlenderTop *pendingBlender = nullptr;
+	FTimerHandle glassTimer;
+	float timerDuration;
+	bool isFill = false;
+
+	UFUNCTION()
+	void FillGlass();
+
+	UFUNCTION()
+	void OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void OnBlenderEndOverlap(UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex);
+
+
 
 	public:
 
 	AGlass();
+
+	void BeginPlay();
+	virtual void Tick(float DeltaTime) override;
+
+	EDrinks getDrink() const;
 	
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent *fillHitBox;
 
+	UPROPERTY(VisibleAnywhere)
+	UPaperSpriteComponent* pinaColadaSprite;
+
+	UPROPERTY(VisibleAnywhere)
+	UPaperSpriteComponent* badDrinkSprite;
+
+	UPROPERTY()
+	UWidgetComponent* timerWidgetInstance;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> timerWidgetClass;
 };
