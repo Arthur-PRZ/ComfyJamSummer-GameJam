@@ -21,7 +21,7 @@ class COMFYJAMSUMMER_API AGlass : public AMoveableSprite
 	
 	private:
 
-	EDrinks drink;
+	EDrinks drink = EDrinks::noDrink;
 	ABlenderTop *pendingBlender = nullptr;
 	FTimerHandle glassTimer;
 	float timerDuration;
@@ -63,6 +63,12 @@ class COMFYJAMSUMMER_API AGlass : public AMoveableSprite
 
 	UPROPERTY(VisibleAnywhere)
 	UPaperSpriteComponent* badDrinkSprite;
+
+	UPROPERTY(VisibleAnywhere)
+	UPaperSpriteComponent* daiquiriSprite;
+
+	UPROPERTY(VisibleAnywhere)
+	UPaperSpriteComponent* margaritaSprite;
 
 	UPROPERTY()
 	UWidgetComponent* timerWidgetInstance;

@@ -9,12 +9,16 @@ AGlass::AGlass()
 
     fillHitBox = CreateDefaultSubobject<UBoxComponent>("FillHitBox");
     pinaColadaSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("PinaColadaSprite"));
+	daiquiriSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("DaiquiriSprite"));
+	margaritaSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("margaritaSprite"));
     badDrinkSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("BadDrinkSprite"));
     timerWidgetInstance = CreateDefaultSubobject<UWidgetComponent>(TEXT("TimerWidget"));
 
     fillHitBox->SetupAttachment(root);
     badDrinkSprite->SetupAttachment(root);
     pinaColadaSprite->SetupAttachment(root);
+    margaritaSprite->SetupAttachment(root);
+    daiquiriSprite->SetupAttachment(root);
     timerWidgetInstance->SetupAttachment(root);
 
     fillHitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -48,10 +52,27 @@ void AGlass::FillGlass()
 {
     isFill = true;
     sprite->SetVisibility(false);
-    if (drink == EDrinks::badDrink)
-        badDrinkSprite->SetVisibility(true);
-    if (drink == EDrinks::pinaColada)
-        pinaColadaSprite->SetVisibility(true);
+
+    switch (drink)
+    {
+		case EDrinks::pinaColada:
+			pinaColadaSprite->SetVisibility(true);
+			break;
+		case EDrinks::daiquiri:
+			daiquiriSprite->SetVisibility(true);
+			break;
+		case EDrinks::margarita:
+			margaritaSprite->SetVisibility(true);
+			break;
+		case EDrinks::badDrink:
+			badDrinkSprite->SetVisibility(true);
+			break;
+		default: 
+			break;
+    }
+	
+    if (pendingBlender)
+        pendingBlender->setDrink(EDrinks::noDrink);
 }
 
 void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
@@ -61,10 +82,8 @@ void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-    UE_LOG(LogTemp, Warning, TEXT("PAS BIZZARE"));
     if (OtherActor && OtherActor->IsA(ABlenderTop::StaticClass()) && isFill == false)
     {
-        UE_LOG(LogTemp, Warning, TEXT("SIUU"));
         pendingBlender = Cast<ABlenderTop>(OtherActor);
         drink = pendingBlender->getDrink();
 
