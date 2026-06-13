@@ -105,9 +105,12 @@ void AGlass::OnBlenderEndOverlap(UPrimitiveComponent* OverlappedComp,
     }
 }
 
-EDrinks AGlass::getDrink() const
+EDrinks AGlass::getDrink()
 {
-    return drink;
+    EDrinks temp = drink;
+    Destroy();
+    GetWorld()->SpawnActor<AGlass>(glassClass, spawnLocation, FRotator::ZeroRotator);
+    return temp;
 }
 
 

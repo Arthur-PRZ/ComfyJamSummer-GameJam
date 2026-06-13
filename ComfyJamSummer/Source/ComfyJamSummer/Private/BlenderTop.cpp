@@ -98,7 +98,7 @@ void ABlenderTop::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
 {
     AMyPlayerController *pc = Cast<AMyPlayerController>(GetWorld()->GetFirstPlayerController());
     ABlender* blender = Cast<ABlender>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlender::StaticClass()));
-
+    
     if (OtherComp->GetName() != TEXT("HitBox") || blender->IsBlenderWorking() || drink != EDrinks::noDrink || !pc->getIsDragging())
         return;
     if (OtherActor && OtherActor->IsA(AIngredients::StaticClass()))

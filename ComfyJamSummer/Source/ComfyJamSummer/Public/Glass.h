@@ -58,13 +58,19 @@ class COMFYJAMSUMMER_API AGlass : public AMoveableSprite
 	void BeginPlay();
 	virtual void Tick(float DeltaTime) override;
 
-	EDrinks getDrink() const;
+	EDrinks getDrink();
 	
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent *fillHitBox;
 
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	FVector spawnLocation;
+
 	UPROPERTY(VisibleAnywhere)
 	UPaperSpriteComponent* pinaColadaSprite;
+	
+	UPROPERTY(EditAnywhere, Category="Spawn")
+	TSubclassOf<AGlass> glassClass;
 
 	UPROPERTY(VisibleAnywhere)
 	UPaperSpriteComponent* badDrinkSprite;
