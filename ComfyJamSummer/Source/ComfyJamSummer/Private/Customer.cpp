@@ -73,12 +73,14 @@ void ACustomer::OnGlassOverlap(UPrimitiveComponent* OverlappedComp, AActor* Othe
         UE_LOG(LogTemp, Warning, TEXT("Bon cocktail servi !"));
         ReceiveDrink();
         glass->Destroy();
+		GetWorld()->SpawnActor<AGlass>(glassClass, spawnLocation, FRotator::ZeroRotator);
     }
     else
     {
         UE_LOG(LogTemp, Warning, TEXT("Mauvais cocktail (voulu=%d, recu=%d)"),
             (int)desiredDrink, (int)glass->getDrink());
 		ReceivedWrongDrink();
+		GetWorld()->SpawnActor<AGlass>(glassClass, spawnLocation, FRotator::ZeroRotator);
 		glass->Destroy();
     }
 }

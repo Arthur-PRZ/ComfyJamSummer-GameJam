@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "Drinks.h"
 #include "Customer.generated.h"
+class AGlass;
 
 UENUM()
 enum class ECustomerState : uint8
@@ -66,6 +67,12 @@ public:
     UPROPERTY(EditAnywhere, Category = "Patience") float stepInterval = 1.f;
     UPROPERTY(EditAnywhere, Category = "Patience") float annoyedThreshold = 60.f;
     UPROPERTY(EditAnywhere, Category = "Patience") float angryThreshold = 30.f;
+
+	UPROPERTY(EditAnywhere, Category = "Glass")
+		TSubclassOf<AGlass> glassClass;
+
+	UPROPERTY(EditAnywhere, Category = "Glass")
+	FVector spawnLocation = FVector::ZeroVector;
 
     void ReceiveDrink();
     ECustomerState GetState() const { return currentState; }
