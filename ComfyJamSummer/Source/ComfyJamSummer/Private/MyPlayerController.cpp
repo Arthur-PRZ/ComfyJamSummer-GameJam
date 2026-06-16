@@ -2,6 +2,8 @@
 
 #include "MyPlayerController.h"
 #include "Shaker.h"
+#include "Customer.h"
+#include "Glass.h"
 #include "Ingredients.h"
 
 void AMyPlayerController::BeginPlay()
@@ -12,6 +14,12 @@ void AMyPlayerController::BeginPlay()
     bEnableClickEvents = true;
     bEnableMouseOverEvents = true;
     EnableInput(this);
+
+    UE_LOG(LogTemp, Warning, TEXT("OUII"));
+    FInputModeGameAndUI InputMode;
+    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+    InputMode.SetHideCursorDuringCapture(false);
+    SetInputMode(InputMode);
 }
 
 void AMyPlayerController::SetupInputComponent()
@@ -29,6 +37,8 @@ void AMyPlayerController::OnClickPressed()
     FHitResult Hit;
     GetHitResultUnderCursor(ECC_Visibility, false, Hit);
 
+    if (!Hit.GetActor())
+        return;
     if (!Hit.GetActor()->IsA(ABlenderTop::StaticClass()))
         isDragging = true;
     if (!Hit.GetActor()->IsA(AShaker::StaticClass()))
@@ -36,6 +46,7 @@ void AMyPlayerController::OnClickPressed()
     if (Hit.GetActor())
     {
         SelectedActor = Hit.GetActor();
+        initialLocation = SelectedActor->GetActorLocation();
 
         if (AIngredients* Ingredient = Cast<AIngredients>(SelectedActor))
         {
@@ -79,6 +90,31 @@ void AMyPlayerController::OnClickReleased()
             blender->FusionBlender();
         }
     }
+
+    AGlass* glass = Cast<AGlass>(SelectedActor);
+    if (glass) 
+    {
+        TArray<AActor*> allCustomers;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomer::StaticClass(), allCustomers);
+
+        for (AActor* actor : allCustomers)
+        {
+            ACustomer* customer = Cast<ACustomer>(actor);
+            if (customer && customer->getIsOverCustomer())
+            {
+                customer->SellDrink();
+                break;
+            }
+        }
+    }
+
+    if (SelectedActor)
+    {
+        FVector Loc = SelectedActor->GetActorLocation();
+        if (Loc.X < minX || Loc.X > maxX || Loc.Z < minZ || Loc.Z > maxZ)
+            SelectedActor->SetActorLocation(initialLocation);
+    }
+
     SelectedActor = nullptr;
     isDragging = false;
     isDraggingShaker = false;

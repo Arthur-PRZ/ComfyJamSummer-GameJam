@@ -130,10 +130,9 @@ void AGlass::OnBlenderEndOverlap(UPrimitiveComponent* OverlappedComp,
     }
 }
 
-EDrinks AGlass::getDrink()
+EDrinks AGlass::getDrink() const
 {
-    EDrinks temp = drink;
-    return temp;
+    return drink;
 }
 
 
