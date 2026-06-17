@@ -99,6 +99,7 @@ void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
         pendingBlender = Cast<ABlenderTop>(OtherActor);
         drink = pendingBlender->getDrink();
 
+        pendingBlender->StartPouring();
         if (drink != EDrinks::noDrink)
             GetWorld()->GetTimerManager().SetTimer(glassTimer, this, &AGlass::FillGlass, timerDuration, false);
     }
@@ -107,6 +108,8 @@ void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
         pendingShaker = Cast<AShaker>(OtherActor);
         drink = pendingShaker->getDrink();
 
+        bool bTiltLeft = pendingShaker->GetActorLocation().X > GetActorLocation().X;
+        pendingShaker->StartPouring(bTiltLeft);
         if (drink != EDrinks::noDrink)
             GetWorld()->GetTimerManager().SetTimer(glassTimer, this, &AGlass::FillGlass, timerDuration, false);
     }
@@ -120,11 +123,13 @@ void AGlass::OnBlenderEndOverlap(UPrimitiveComponent* OverlappedComp,
 {
     if (OtherActor == pendingBlender)
     {
+        pendingBlender->StopPouring();
         GetWorld()->GetTimerManager().ClearTimer(glassTimer);
         pendingBlender = nullptr;
     }
     else if (OtherActor == pendingShaker)
     {
+        pendingShaker->StopPouring();
         GetWorld()->GetTimerManager().ClearTimer(glassTimer);
         pendingShaker  = nullptr;
     }
