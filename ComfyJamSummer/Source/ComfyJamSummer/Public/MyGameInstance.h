@@ -24,6 +24,8 @@ class COMFYJAMSUMMER_API UMyGameInstance : public UGameInstance
 
 		virtual void OnStart() override;
 
+        float GetMusicVolume() const;
+
         void SetVolume(float volume);
         void PlayMusic(USoundBase* music);
 };

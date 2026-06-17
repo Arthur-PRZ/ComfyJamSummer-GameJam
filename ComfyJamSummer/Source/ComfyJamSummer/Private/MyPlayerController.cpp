@@ -3,6 +3,7 @@
 #include "MyPlayerController.h"
 #include "Shaker.h"
 #include "Customer.h"
+#include "MyGameInstance.h"
 #include "Glass.h"
 #include "Ingredients.h"
 
@@ -20,16 +21,31 @@ void AMyPlayerController::BeginPlay()
     InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
     InputMode.SetHideCursorDuringCapture(false);
     SetInputMode(InputMode);
+
 }
 
 void AMyPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
 
-    InputComponent->BindAction("Click", IE_Pressed, this, 
-        &AMyPlayerController::OnClickPressed);
-    InputComponent->BindAction("Click", IE_Released, this, 
-        &AMyPlayerController::OnClickReleased);
+    InputComponent->BindAction("Pause", IE_Pressed, this, &AMyPlayerController::TogglePause);
+    InputComponent->BindAction("Click", IE_Pressed, this, &AMyPlayerController::OnClickPressed);
+    InputComponent->BindAction("Click", IE_Released, this, &AMyPlayerController::OnClickReleased);
+}
+
+void AMyPlayerController::TogglePause()
+{
+    if (pauseMenuInstance && pauseMenuInstance->IsInViewport())
+    {
+        UGameplayStatics::SetGamePaused(this, false);
+        pauseMenuInstance->RemoveFromParent();
+    }
+    else
+    {
+        UGameplayStatics::SetGamePaused(this, true);
+        pauseMenuInstance = CreateWidget<UUserWidget>(this, pauseMenuClass);
+        pauseMenuInstance->AddToViewport();
+    }
 }
 
 void AMyPlayerController::OnClickPressed()
