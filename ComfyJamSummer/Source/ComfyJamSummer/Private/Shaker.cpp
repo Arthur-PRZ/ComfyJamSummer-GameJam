@@ -15,6 +15,11 @@ AShaker::AShaker()
     fillHitBox->SetupAttachment(root);
     shakerOpenSprite->SetupAttachment(root);
     
+	timerWidgetInstance->SetWidgetSpace(EWidgetSpace::World);
+    timerWidgetInstance->SetRelativeLocation(FVector(0.f, 0.f, 40.f));
+    timerWidgetInstance->SetDrawSize(FVector2D(400.f, 80.f));
+    timerWidgetInstance->SetWorldScale3D(FVector(0.07f, 0.07f, 0.07f));
+    timerWidgetInstance->SetWorldRotation(FRotator(0.f, -90.f, 0.f));
     fillHitBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     fillHitBox->SetCollisionObjectType(ECC_WorldDynamic);
     fillHitBox->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -27,12 +32,6 @@ AShaker::AShaker()
 void AShaker::BeginPlay()
 {
     Super::BeginPlay();
-
-    timerWidgetInstance->SetWidgetSpace(EWidgetSpace::World);
-    timerWidgetInstance->SetRelativeLocation(FVector(0.f, 0.f, 40.f));
-    timerWidgetInstance->SetDrawSize(FVector2D(400.f, 80.f));
-    timerWidgetInstance->SetWorldScale3D(FVector(0.07f, 0.07f, 0.07f));
-    timerWidgetInstance->SetWorldRotation(FRotator(0.f, -90.f, 0.f));
 
     timerWidgetInstance->SetWidgetClass(timerWidgetClass);
     pc = Cast<AMyPlayerController>(GetWorld()->GetFirstPlayerController());
@@ -116,15 +115,21 @@ void AShaker::makeDrink()
 {
     TArray<EIngredientsTypes> pinaColadaRecipe =
     {
-        EIngredientsTypes::pineapple,
-        EIngredientsTypes::rum,
-        EIngredientsTypes::cocoJuice
+        EIngredientsTypes::yellow,
+        EIngredientsTypes::blue
+    };
+
+    TArray<EIngredientsTypes> straightGasoline =
+    {
+        EIngredientsTypes::gasoline
     };
 
     if (ContainsRecipe(pinaColadaRecipe))
     {
         drink = EDrinks::pinaColada;
     }
+	else if (ContainsRecipe(straightGasoline))
+		drink = EDrinks::gasoline;
     else
         drink = EDrinks::badDrink;
     currentIngredients.Empty();

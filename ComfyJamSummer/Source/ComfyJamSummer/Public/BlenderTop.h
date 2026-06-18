@@ -58,13 +58,13 @@ class COMFYJAMSUMMER_API ABlenderTop : public AMoveableSprite
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent *fillHitBox;
 
+	UPROPERTY(VisibleAnywhere)
+	UWidgetComponent* timerWidgetInstance;
+
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> timerWidgetClass;
 
 	float timerDuration;
-
-	UPROPERTY()
-	UWidgetComponent* timerWidgetInstance;
 
 	const TArray<EIngredientsTypes>& getCurrentIngredients() const;
 	void clearCurrentIngredients();

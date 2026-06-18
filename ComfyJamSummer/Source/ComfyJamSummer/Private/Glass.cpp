@@ -12,6 +12,7 @@ AGlass::AGlass()
 	daiquiriSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("DaiquiriSprite"));
 	margaritaSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("margaritaSprite"));
     badDrinkSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("BadDrinkSprite"));
+	straightGasolineSprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("StraightGasolineSprite"));
     timerWidgetInstance = CreateDefaultSubobject<UWidgetComponent>(TEXT("TimerWidget"));
 
     fillHitBox->SetupAttachment(root);
@@ -19,7 +20,13 @@ AGlass::AGlass()
     pinaColadaSprite->SetupAttachment(root);
     margaritaSprite->SetupAttachment(root);
     daiquiriSprite->SetupAttachment(root);
+	straightGasolineSprite->SetupAttachment(root);
     timerWidgetInstance->SetupAttachment(root);
+	timerWidgetInstance->SetWidgetSpace(EWidgetSpace::World);
+	timerWidgetInstance->SetRelativeLocation(FVector(0.f, 0.f, 80.f));
+	timerWidgetInstance->SetDrawSize(FVector2D(400.f, 80.f));
+	timerWidgetInstance->SetRelativeScale3D(FVector(0.07f, 0.07f, 0.07f));
+	timerWidgetInstance->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
     fillHitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     fillHitBox->SetCollisionObjectType(ECC_WorldStatic);
@@ -37,19 +44,12 @@ void AGlass::BeginPlay()
 {
     Super::BeginPlay();
 
-    timerWidgetInstance->SetWidgetSpace(EWidgetSpace::World);
-    timerWidgetInstance->SetRelativeLocation(FVector(0.f, 0.f, 40.f));
-    timerWidgetInstance->SetDrawSize(FVector2D(400.f, 80.f));
-    timerWidgetInstance->SetWorldScale3D(FVector(0.07f, 0.07f, 0.07f));
-    timerWidgetInstance->SetWorldRotation(FRotator(0.f, -90.f, 0.f));
-
     timerWidgetInstance->SetWidgetClass(timerWidgetClass);
-    pinaColadaSprite->SetVisibility(false);
-    badDrinkSprite->SetVisibility(false);
 }
 
 void AGlass::FillGlass()
 {
+	StopPourSound();
     isFill = true;
     sprite->SetVisibility(false);
 
@@ -67,6 +67,9 @@ void AGlass::FillGlass()
 		case EDrinks::badDrink:
 			badDrinkSprite->SetVisibility(true);
 			break;
+		case EDrinks::gasoline:
+			straightGasolineSprite->SetVisibility(true);
+			break;
 		default: 
 			break;
     }
@@ -83,7 +86,7 @@ void AGlass::FillGlass()
         pendingShaker->shakerOpenSprite->SetVisibility(false);
         pendingShaker->GetSprite()->SetVisibility(true); 
     }
-    else
+    else if (pendingBlender)
         pendingBlender->resetDrink();
 }
 
@@ -100,7 +103,10 @@ void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
         drink = pendingBlender->getDrink();
 
         if (drink != EDrinks::noDrink)
+		{
             GetWorld()->GetTimerManager().SetTimer(glassTimer, this, &AGlass::FillGlass, timerDuration, false);
+			StartPourSound();
+		}
     }
     else if (OtherActor && OtherActor->IsA(AShaker::StaticClass()) && isFill == false)
     {
@@ -108,9 +114,23 @@ void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
         drink = pendingShaker->getDrink();
 
         if (drink != EDrinks::noDrink)
+		{
             GetWorld()->GetTimerManager().SetTimer(glassTimer, this, &AGlass::FillGlass, timerDuration, false);
+			StartPourSound();
+		}
     }
+    else if (OtherActor && OtherActor->IsA(AIngredients::StaticClass()) && isFill == false)
+    {
+        AIngredients* ingredient = Cast<AIngredients>(OtherActor);
 
+        if (ingredient && ingredient->getIngredientType() == EIngredientsTypes::gasoline)
+        {
+            pendingIngredient = ingredient;
+            drink = EDrinks::gasoline;
+            GetWorld()->GetTimerManager().SetTimer(glassTimer, this, &AGlass::FillGlass, timerDuration, false);
+			StartPourSound();
+        }
+    }
 }
 
 void AGlass::OnBlenderEndOverlap(UPrimitiveComponent* OverlappedComp,
@@ -122,12 +142,20 @@ void AGlass::OnBlenderEndOverlap(UPrimitiveComponent* OverlappedComp,
     {
         GetWorld()->GetTimerManager().ClearTimer(glassTimer);
         pendingBlender = nullptr;
+		StopPourSound();
     }
     else if (OtherActor == pendingShaker)
     {
         GetWorld()->GetTimerManager().ClearTimer(glassTimer);
         pendingShaker  = nullptr;
+		StopPourSound();
     }
+	else if (OtherActor == pendingIngredient)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(glassTimer);
+		pendingIngredient = nullptr;
+		StopPourSound();
+	}
 }
 
 EDrinks AGlass::getDrink() const
@@ -170,5 +198,20 @@ void AGlass::Tick(float DeltaTime)
         {
             Widget->SetVisibility(ESlateVisibility::Hidden);
         }
+    }
+}
+
+void AGlass::StartPourSound()
+{
+    if (pourSound && !pourAudio)
+        pourAudio = UGameplayStatics::SpawnSound2D(this, pourSound);
+}
+
+void AGlass::StopPourSound()
+{
+    if (pourAudio)
+    {
+        pourAudio->Stop();
+        pourAudio = nullptr;
     }
 }

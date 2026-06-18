@@ -10,6 +10,9 @@
 #include "IngredientsTypes.h"
 #include "MyPlayerController.h"
 #include "Ingredients.h"
+#include "MyGameInstance.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
 #include "Shaker.generated.h"
 
 
@@ -52,6 +55,10 @@ class COMFYJAMSUMMER_API AShaker : public AMoveableSprite
 	void makeDrink();
 	bool ContainsRecipe(const TArray<EIngredientsTypes>& recipe);
 
+	void StartShakerSound();
+	void StopShakerSound();
+
+	float lastMoveTime = -10.f;
 	public :
 
 	AShaker();
@@ -62,15 +69,21 @@ class COMFYJAMSUMMER_API AShaker : public AMoveableSprite
 
 	EDrinks getDrink() const;
 
+	UPROPERTY(VisibleAnywhere)
+	UPaperSpriteComponent* shakerOpenSprite;
+	
+	UPROPERTY(VisibleAnywhere)
+	UWidgetComponent* timerWidgetInstance;
+
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> timerWidgetClass;
 
 	UPROPERTY(VisibleAnywhere)
-	UPaperSpriteComponent* shakerOpenSprite;
+	UBoxComponent *fillHitBox;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* shakerSound;
 
 	UPROPERTY()
-	UWidgetComponent* timerWidgetInstance;
-
-	UPROPERTY(VisibleAnywhere)
-	UBoxComponent *fillHitBox;
+	UAudioComponent* shakerAudio = nullptr;
 };

@@ -68,10 +68,11 @@ void ACustomer::PickRandomOrder()
 {
     const EDrinks options[] = {
         EDrinks::daiquiri,
-        EDrinks::margarita
+        EDrinks::margarita,
+		EDrinks::pinaColada
     };
 
-    desiredDrink = options[FMath::RandRange(0, 1)];
+    desiredDrink = options[FMath::RandRange(0, 2)];
 
     UE_LOG(LogTemp, Warning, TEXT("Le client commande : %d"), (int)desiredDrink);
 
@@ -90,26 +91,23 @@ void ACustomer::OnGlassOverlap(UPrimitiveComponent* OverlappedComp, AActor* Othe
         return;
 
     isOverCustomer = true;
-    // if (glass->getDrink() == desiredDrink)
-    // {
-    //     UE_LOG(LogTemp, Warning, TEXT("Bon cocktail servi !"));
-    //     ReceiveDrink();
-    //     glass->Destroy();
-	// 	GetWorld()->SpawnActor<AGlass>(glassClass, spawnLocation, FRotator::ZeroRotator);
-    // }
-    // else
-    // {
-    //     UE_LOG(LogTemp, Warning, TEXT("Mauvais cocktail (voulu=%d, recu=%d)"),
-    //         (int)desiredDrink, (int)glass->getDrink());
-	// 	ReceivedWrongDrink();
-	// 	GetWorld()->SpawnActor<AGlass>(glassClass, spawnLocation, FRotator::ZeroRotator);
-	// 	glass->Destroy();
-    // }
 }
 
 void ACustomer::SellDrink()
 {
     AGlass* glass = Cast<AGlass>(UGameplayStatics::GetActorOfClass(GetWorld(), AGlass::StaticClass()));
+	if (!glass)
+		return;
+
+    if (glass->getDrink() == EDrinks::gasoline)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Gasoline servie, le client meurt"));
+
+        ReceivedWrongDrink(EDeathCause::Arrest);
+        glass->Destroy();
+        GetWorld()->SpawnActor<AGlass>(glassClass, spawnLocation, FRotator::ZeroRotator);
+        return;
+    }
 
     if (glass->getDrink() == desiredDrink)
     {
@@ -122,7 +120,7 @@ void ACustomer::SellDrink()
     {
         UE_LOG(LogTemp, Warning, TEXT("Mauvais cocktail (voulu=%d, recu=%d)"),
             (int)desiredDrink, (int)glass->getDrink());
-		ReceivedWrongDrink();
+		ReceivedWrongDrink(EDeathCause::Fired);
 		GetWorld()->SpawnActor<AGlass>(glassClass, spawnLocation, FRotator::ZeroRotator);
 		glass->Destroy();
     }
@@ -146,7 +144,7 @@ void ACustomer::DecreasePatience()
 			orderComp->SetVisibility(false);
 
         APlayerHealth* playerHealth = Cast<APlayerHealth>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerHealth::StaticClass()));
-	    playerHealth->LoseLife();
+	    playerHealth->LoseLife(EDeathCause::Fired);
 
 		StartLeaveTimer();
 	}
@@ -208,11 +206,10 @@ void ACustomer::ReceiveDrink()
 	StartLeaveTimer();
 }
 
-void ACustomer::ReceivedWrongDrink()
+void ACustomer::ReceivedWrongDrink(EDeathCause cause)
 {
-
     APlayerHealth* playerHealth = Cast<APlayerHealth>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerHealth::StaticClass()));
-	playerHealth->LoseLife();
+	playerHealth->LoseLife(cause);
 
     GetWorldTimerManager().ClearTimer(patienceTimer);
 

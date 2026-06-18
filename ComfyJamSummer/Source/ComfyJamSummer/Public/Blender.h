@@ -9,6 +9,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/ProgressBar.h"
 #include "Components/WidgetComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
+#include "MyGameInstance.h"
 #include "Blender.generated.h"
 
 /**
@@ -58,6 +61,10 @@ class COMFYJAMSUMMER_API ABlender : public AActor
 
 	bool ContainsRecipe(const TArray<EIngredientsTypes>& Recipe);
 
+	void StartBlenderSound();
+
+	void StopBlenderSound();
+
 	public:
 	
 	virtual void Tick(float DeltaTime) override;
@@ -77,11 +84,11 @@ class COMFYJAMSUMMER_API ABlender : public AActor
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent *root;
 
+	UPROPERTY(VisibleAnywhere)
+	UWidgetComponent* timerWidgetInstance;
+
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> timerWidgetClass;
-
-	UPROPERTY()
-	UWidgetComponent* timerWidgetInstance;
 
 	UPROPERTY()
 	ABlenderTop* blenderTopRef;
@@ -91,4 +98,10 @@ class COMFYJAMSUMMER_API ABlender : public AActor
 
 	UPROPERTY(VisibleAnywhere)
 	UPaperSpriteComponent *blenderSprite;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* blenderSound;
+
+	UPROPERTY()
+	UAudioComponent* blenderAudio = nullptr;
 };

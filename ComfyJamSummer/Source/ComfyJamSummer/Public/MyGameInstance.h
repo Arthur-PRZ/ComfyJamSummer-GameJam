@@ -22,6 +22,8 @@ class COMFYJAMSUMMER_API UMyGameInstance : public UGameInstance
         UPROPERTY()
         UAudioComponent* audioComponent = nullptr;
 
+		UAudioComponent* SpawnSFX(USoundBase* sound, float volumeScale = 1.0f);
+
 		virtual void OnStart() override;
 
         void SetVolume(float volume);

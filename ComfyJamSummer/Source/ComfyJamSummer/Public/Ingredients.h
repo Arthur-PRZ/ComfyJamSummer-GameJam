@@ -24,7 +24,7 @@ class COMFYJAMSUMMER_API AIngredients : public AMoveableSprite
 	public:
 
 	AIngredients();
-	
+	virtual void BeginPlay() override;
 	const EIngredientsTypes &getIngredientType() const;
 
     UFUNCTION(BlueprintCallable, Category = "Ingredient")

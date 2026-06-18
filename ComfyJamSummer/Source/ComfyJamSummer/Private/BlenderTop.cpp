@@ -12,6 +12,12 @@ ABlenderTop::ABlenderTop()
     timerWidgetInstance = CreateDefaultSubobject<UWidgetComponent>(TEXT("TimerWidget"));
     fillHitBox->SetupAttachment(root);
     timerWidgetInstance->SetupAttachment(root);
+	timerWidgetInstance->SetupAttachment(root);
+	timerWidgetInstance->SetWidgetSpace(EWidgetSpace::World);
+	timerWidgetInstance->SetRelativeLocation(FVector(0.f, 0.f, 80.f));
+	timerWidgetInstance->SetDrawSize(FVector2D(400.f, 80.f));
+	timerWidgetInstance->SetRelativeScale3D(FVector(0.07f, 0.07f, 0.07f));
+	timerWidgetInstance->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
     
     fillHitBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     fillHitBox->SetCollisionObjectType(ECC_WorldDynamic);
@@ -28,13 +34,7 @@ ABlenderTop::ABlenderTop()
 void ABlenderTop::BeginPlay()
 {
     Super::BeginPlay();
-
-    timerWidgetInstance->SetWidgetSpace(EWidgetSpace::World);
-    timerWidgetInstance->SetRelativeLocation(FVector(0.f, 0.f, 80.f));
-    timerWidgetInstance->SetDrawSize(FVector2D(400.f, 80.f));
-    timerWidgetInstance->SetWorldScale3D(FVector(0.07f, 0.07f, 0.07f));
-    timerWidgetInstance->SetWorldRotation(FRotator(0.f, -90.f, 0.f));
-
+	
     timerWidgetInstance->SetWidgetClass(timerWidgetClass);
 }
 

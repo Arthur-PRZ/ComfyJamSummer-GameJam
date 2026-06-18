@@ -5,13 +5,8 @@
 UENUM()
 enum class EIngredientsTypes : uint8
 {
-    pineapple,
-    gasoline,
-    rum,
-    cocoJuice,
-	tequila,
-	limeJuice,
-	sugarSyrup,
-	orangeLiqueur,
-	ice
+	gasoline,
+	red,
+	blue,
+	yellow
 };

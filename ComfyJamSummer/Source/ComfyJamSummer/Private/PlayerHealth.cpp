@@ -1,9 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PlayerHealth.h"
 
-// Sets default values
 APlayerHealth::APlayerHealth()
 {
     root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
@@ -18,7 +14,6 @@ APlayerHealth::APlayerHealth()
 
         Full->SetupAttachment(root);
         Empty->SetupAttachment(root);
-        
         Empty->SetHiddenInGame(true);
 
         heartsFullArray.Add(Full);
@@ -26,21 +21,53 @@ APlayerHealth::APlayerHealth()
     }
 }
 
-
-void APlayerHealth::LoseLife()
+void APlayerHealth::LoseLife(EDeathCause cause)
 {
-    int liveLost = 3 - lives;
-
-    if (lives > 0)
-        lives--;
-    else
-        return ;
-
-    heartsFullArray[liveLost]->SetHiddenInGame(true);
-    heartsEmptyArray[liveLost]->SetHiddenInGame(false);
-    if (lives == 0)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("YOU LOST"));
+    if (lives <= 0)
         return;
+
+    if (cause == EDeathCause::Arrest)
+        arrestCount++;
+    else if (cause == EDeathCause::Fired)
+        firedCount++;
+
+    lives--;
+    UpdateHearts();
+
+    if (lockedEnding == EDeathCause::None)
+    {
+        if (arrestCount >= strikesToLose)
+            lockedEnding = EDeathCause::Arrest;
+        else if (firedCount >= strikesToLose)
+            lockedEnding = EDeathCause::Fired;
+    }
+
+    if (lives <= 0)
+    {
+        if (lockedEnding == EDeathCause::None)
+            lockedEnding = (arrestCount > firedCount) ? EDeathCause::Arrest : EDeathCause::Fired;
+
+        if (lockedEnding == EDeathCause::Arrest)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("GAME OVER : ARRETE PAR LA POLICE"));
+            // TODO: ecran / niveau "arrete"
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("GAME OVER : VIRE"));
+            // TODO: ecran / niveau "vire"
+        }
+    }
+}
+
+void APlayerHealth::UpdateHearts()
+{
+    int totalLost = heartsFullArray.Num() - lives;
+    for (int32 i = 0; i < heartsFullArray.Num(); i++)
+    {
+        bool lost = i < totalLost;
+        heartsFullArray[i]->SetHiddenInGame(lost);
+        if (heartsEmptyArray.IsValidIndex(i))
+            heartsEmptyArray[i]->SetHiddenInGame(!lost);
     }
 }

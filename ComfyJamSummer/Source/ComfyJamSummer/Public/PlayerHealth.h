@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,24 +5,39 @@
 #include "PaperSpriteComponent.h"
 #include "PlayerHealth.generated.h"
 
+UENUM()
+enum class EDeathCause : uint8
+{
+    None,
+    Arrest,
+    Fired
+};
+
 UCLASS()
 class COMFYJAMSUMMER_API APlayerHealth : public AActor
 {
-	GENERATED_BODY()
-	
-	private:	
-		int lives = 3;
-		
-	public:	
-		APlayerHealth();
-		void LoseLife();
+    GENERATED_BODY()
 
-		UPROPERTY(VisibleAnywhere)
-		TArray<UPaperSpriteComponent*> heartsFullArray;
-		UPROPERTY(VisibleAnywhere)
-		TArray<UPaperSpriteComponent*> heartsEmptyArray;
+private:
+    int lives = 3;
+    int arrestCount = 0;
+    int firedCount = 0;
+    EDeathCause lockedEnding = EDeathCause::None;
 
-		UPROPERTY(VisibleAnywhere)
-		USceneComponent *root;
+    void UpdateHearts();
 
+public:
+    APlayerHealth();
+    void LoseLife(EDeathCause cause);
+
+    UPROPERTY(EditAnywhere, Category = "Health")
+    int strikesToLose = 2;
+
+    UPROPERTY(VisibleAnywhere)
+    TArray<UPaperSpriteComponent*> heartsFullArray;
+    UPROPERTY(VisibleAnywhere)
+    TArray<UPaperSpriteComponent*> heartsEmptyArray;
+
+    UPROPERTY(VisibleAnywhere)
+    USceneComponent *root;
 };

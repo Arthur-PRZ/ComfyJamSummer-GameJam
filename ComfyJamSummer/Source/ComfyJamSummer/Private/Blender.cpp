@@ -18,6 +18,11 @@ ABlender::ABlender()
     hitBox->SetupAttachment(root);
     blenderSprite->SetupAttachment(root);
     timerWidgetInstance->SetupAttachment(root);
+	timerWidgetInstance->SetWidgetSpace(EWidgetSpace::World);
+	timerWidgetInstance->SetRelativeLocation(FVector(0.f, 0.f, 80.f));
+	timerWidgetInstance->SetDrawSize(FVector2D(400.f, 80.f));
+	timerWidgetInstance->SetRelativeScale3D(FVector(0.07f, 0.07f, 0.07f));
+	timerWidgetInstance->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
     hitBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     hitBox->SetCollisionObjectType(ECC_WorldStatic);
@@ -37,14 +42,6 @@ void ABlender::BeginPlay()
 
     blenderTopRef = Cast<ABlenderTop>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlenderTop::StaticClass()));
     isBlenderFusion = true;
-    UE_LOG(LogTemp, Warning, TEXT("SIU"));
-
-    timerWidgetInstance->SetWidgetSpace(EWidgetSpace::World);
-    timerWidgetInstance->SetRelativeLocation(FVector(0.f, 0.f, -25.f));
-    timerWidgetInstance->SetDrawSize(FVector2D(400.f, 80.f));
-    timerWidgetInstance->SetWorldScale3D(FVector(0.07f, 0.07f, 0.07f));
-    timerWidgetInstance->SetWorldRotation(FRotator(0.f, -90.f, 0.f)); 
-
     timerWidgetInstance->SetWidgetClass(timerWidgetClass);
 }
 
@@ -123,8 +120,9 @@ void ABlender::BlenderStart()
 {
     static const TMap<EDrinks, TArray<EIngredientsTypes>> Recipes =
     {
-        { EDrinks::daiquiri,   { EIngredientsTypes::rum,    EIngredientsTypes::limeJuice, EIngredientsTypes::sugarSyrup } },
-        { EDrinks::margarita,  { EIngredientsTypes::tequila, EIngredientsTypes::limeJuice, EIngredientsTypes::orangeLiqueur } },
+        { EDrinks::daiquiri,   { EIngredientsTypes::red, EIngredientsTypes::yellow } },
+        { EDrinks::margarita,  { EIngredientsTypes::red, EIngredientsTypes::blue } },
+		{ EDrinks::gasoline, { EIngredientsTypes::gasoline }}
     };
 
     EDrinks result = EDrinks::badDrink;
@@ -140,6 +138,7 @@ void ABlender::BlenderStart()
     blenderTopRef->setDrink(result);
     blenderTopRef->clearCurrentIngredients();
     isBlenderWorking = false;
+	StopBlenderSound();
 }
 
 void ABlender::OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPressed)
@@ -157,7 +156,8 @@ void ABlender::OnBlenderClicked(UPrimitiveComponent* ClickedComp, FKey ButtonPre
             UE_LOG(LogTemp, Warning, TEXT("BRRRRRR..."));
             timerDuration = 5.0f;
             GetWorld()->GetTimerManager().SetTimer(blenderTimer, this, &ABlender::BlenderStart, 5.0f, false);
-        }
+        	StartBlenderSound();
+		}
     }
     else
         UE_LOG(LogTemp, Warning, TEXT("BLENDER MISSING"));
@@ -215,4 +215,20 @@ void ABlender::OnTopLeaveBottom(
         isOverBlender = false;
     }
 
+}
+
+void ABlender::StartBlenderSound()
+{
+    if (blenderSound && !blenderAudio)
+        if (UMyGameInstance* GI = Cast<UMyGameInstance>(GetGameInstance()))
+            blenderAudio = GI->SpawnSFX(blenderSound, 0.5f);
+}
+
+void ABlender::StopBlenderSound()
+{
+    if (blenderAudio)
+    {
+        blenderAudio->Stop();
+        blenderAudio = nullptr;
+    }
 }

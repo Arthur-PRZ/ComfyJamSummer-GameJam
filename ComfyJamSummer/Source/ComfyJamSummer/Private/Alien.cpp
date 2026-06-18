@@ -56,7 +56,7 @@ void AAlien::OnPlayerCaught()
 	UE_LOG(LogTemp, Warning, TEXT("Player caught"));
     APlayerHealth* playerHealth = Cast<APlayerHealth>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerHealth::StaticClass()));
 
-	playerHealth->LoseLife();
+	playerHealth->LoseLife(EDeathCause::Fired);
 }
 
 void AAlien::Tick(float DeltaTime)

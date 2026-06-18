@@ -34,3 +34,10 @@ void UMyGameInstance::PlayMusic(USoundBase* music)
             audioComponent->SetVolumeMultiplier(musicVolume);
     }
 }
+
+UAudioComponent* UMyGameInstance::SpawnSFX(USoundBase* sound, float volumeScale)
+{
+    if (!sound)
+        return nullptr;
+    return UGameplayStatics::SpawnSound2D(this, sound, musicVolume * volumeScale);
+}

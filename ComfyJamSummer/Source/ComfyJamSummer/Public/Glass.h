@@ -10,6 +10,7 @@
 #include "Shaker.h"
 #include "Components/ProgressBar.h"
 #include "Components/WidgetComponent.h"
+#include "Components/AudioComponent.h"
 #include "Glass.generated.h"
 
 class AShaker;
@@ -28,6 +29,7 @@ class COMFYJAMSUMMER_API AGlass : public AMoveableSprite
 	EDrinks drink = EDrinks::noDrink;
 	ABlenderTop *pendingBlender = nullptr;
 	AShaker *pendingShaker = nullptr;
+	AIngredients *pendingIngredient = nullptr;
 	FTimerHandle glassTimer;
 	float timerDuration;
 	bool isFill = false;
@@ -49,7 +51,8 @@ class COMFYJAMSUMMER_API AGlass : public AMoveableSprite
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
 
-
+	void StartPourSound();
+	void StopPourSound();
 
 	public:
 
@@ -81,9 +84,18 @@ class COMFYJAMSUMMER_API AGlass : public AMoveableSprite
 	UPROPERTY(VisibleAnywhere)
 	UPaperSpriteComponent* margaritaSprite;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
+	UPaperSpriteComponent* straightGasolineSprite;
+	
+	UPROPERTY(VisibleAnywhere)
 	UWidgetComponent* timerWidgetInstance;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> timerWidgetClass;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* pourSound;
+
+	UPROPERTY()
+	UAudioComponent* pourAudio = nullptr;
 };

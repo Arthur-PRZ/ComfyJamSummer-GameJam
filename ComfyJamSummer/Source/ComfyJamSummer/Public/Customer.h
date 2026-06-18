@@ -6,6 +6,7 @@
 #include "Drinks.h"
 #include "Customer.generated.h"
 class AGlass;
+enum class EDeathCause: uint8;
 
 UENUM()
 enum class ECustomerState : uint8
@@ -96,7 +97,7 @@ private:
 
 	void StartLeaveTimer();
 	void Leave();
-	void ReceivedWrongDrink();
+	void ReceivedWrongDrink(EDeathCause cause);
     void PickRandomOrder();
     void DecreasePatience();
     void UpdateState();
