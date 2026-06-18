@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Drinks.h"
+#include "MyPlayerController.h"
 #include "Glass.h"
 
 AGlass::AGlass()
@@ -94,6 +95,11 @@ void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
+    AMyPlayerController *pc = Cast<AMyPlayerController>(GetWorld()->GetFirstPlayerController());
+
+    if (!pc->getIsDraggingShaker())
+        return ;
+
     if (OtherActor && OtherActor->IsA(ABlenderTop::StaticClass()) && isFill == false)
     {
         pendingBlender = Cast<ABlenderTop>(OtherActor);
