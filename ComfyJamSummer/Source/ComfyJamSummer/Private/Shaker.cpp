@@ -37,6 +37,9 @@ void AShaker::BeginPlay()
     timerWidgetInstance->SetWidgetClass(timerWidgetClass);
     pc = Cast<AMyPlayerController>(GetWorld()->GetFirstPlayerController());
     shakerOpenSprite->SetVisibility(false);
+
+	fillHitBox->SetUsingAbsoluteRotation(true);
+    hitBox->SetUsingAbsoluteRotation(true);
 }
 
 void AShaker::ValidateIngredient()
@@ -44,8 +47,8 @@ void AShaker::ValidateIngredient()
     if (!pendingIngredient)
         return ;
     EIngredientsTypes ingredientType = pendingIngredient->getIngredientType();
-
     currentIngredients.Add(ingredientType);
+	pendingIngredient->StopPouring();
     UE_LOG(LogTemp, Warning, TEXT("INGREDIENT ADDED"));
 }
 
@@ -155,7 +158,9 @@ void AShaker::resetDrink()
 
 void AShaker::StartPouring(bool bShouldTiltLeft)
 {
-    SetActorRotation(FRotator(0.f, 0.f, 0.f)); 
+    if (isPouring)
+        return;
+
     isPouring = true;
     this->bTiltLeft = bShouldTiltLeft;
 }
@@ -169,12 +174,12 @@ void AShaker::StopPouring()
 void AShaker::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
- 
+
     if (isPouring)
     {
         TArray<AActor*> overlappingActors;
         GetOverlappingActors(overlappingActors);
-        
+
         bool stillOverlapping = false;
         for (AActor* actor : overlappingActors)
         {
@@ -187,23 +192,16 @@ void AShaker::Tick(float DeltaTime)
         if (!stillOverlapping)
         {
             StopPouring();
-            return;
-        }
-
-        FRotator CurrentRotation = GetActorRotation();
-        float TargetPitch = -70.f;
-        if (bTiltLeft)
-            TargetPitch = 70.f;
-        CurrentRotation.Pitch = FMath::FInterpTo(CurrentRotation.Pitch, TargetPitch, DeltaTime, 3.f);
-        SetActorRotation(CurrentRotation);
+        } else {
+			FRotator CurrentRotation = GetActorRotation();
+			float TargetPitch = bTiltLeft ? 70.f : -70.f;
+			CurrentRotation.Pitch = FMath::FInterpTo(CurrentRotation.Pitch, TargetPitch, DeltaTime, 3.f);
+			SetActorRotation(CurrentRotation);
+		}
     }
 
-    if (!currentIngredients.IsEmpty())
+    if (!currentIngredients.IsEmpty() && pc && pc->getIsDraggingShaker())
     {
-        if (!pc || !pc->getIsDraggingShaker())
-            return;
-
-        UE_LOG(LogTemp, Warning, TEXT("RENTRE"));
         FVector2D CurrentMousePos;
         pc->GetMousePosition(CurrentMousePos.X, CurrentMousePos.Y);
 
@@ -212,45 +210,56 @@ void AShaker::Tick(float DeltaTime)
         ShakePower += Delta;
         LastMousePos = CurrentMousePos;
 
-        float ShakeThreshold = 500.f;
-        if (ShakePower >= ShakeThreshold)
+        StartShakerSound();
+
+        if (ShakePower >= 500.f)
         {
             UE_LOG(LogTemp, Warning, TEXT("SHAKE COMPLETE!"));
             ShakePower = 0.f;
             makeDrink();
         }
     }
+    else
+    {
+        StopShakerSound();
+    }
 
     ShakePower = FMath::FInterpTo(ShakePower, 0.f, DeltaTime, 0.5f);
+
     if (GetWorld()->GetTimerManager().IsTimerActive(IngredientTimer) && timerWidgetInstance)
     {
-
         UUserWidget* Widget = timerWidgetInstance->GetUserWidgetObject();
-
         if (Widget)
         {
             Widget->SetVisibility(ESlateVisibility::Visible);
-
             float Remaining = GetWorld()->GetTimerManager().GetTimerRemaining(IngredientTimer);
             float Progress = Remaining / timerDuration;
-
             UProgressBar* Bar = Cast<UProgressBar>(
-                Widget->GetWidgetFromName(TEXT("TimerProgressBar"))
-            );
-
+                Widget->GetWidgetFromName(TEXT("TimerProgressBar")));
             if (Bar)
-            {
                 Bar->SetPercent(Progress);
-            }
         }
     }
     else if (timerWidgetInstance)
     {
         UUserWidget* Widget = timerWidgetInstance->GetUserWidgetObject();
-
         if (Widget)
-        {
             Widget->SetVisibility(ESlateVisibility::Hidden);
-        }
+    }
+}
+
+void AShaker::StartShakerSound()
+{
+    if (shakerSound && !shakerAudio)
+        if (UMyGameInstance* GI = Cast<UMyGameInstance>(GetGameInstance()))
+            shakerAudio = GI->SpawnSFX(shakerSound, 3.f);
+}
+
+void AShaker::StopShakerSound()
+{
+    if (shakerAudio)
+    {
+        shakerAudio->Stop();
+        shakerAudio = nullptr;
     }
 }

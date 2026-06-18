@@ -84,11 +84,15 @@ void AGlass::FillGlass()
     if (pendingShaker)
     {
         pendingShaker->resetDrink();
+		pendingShaker->StopPouring();
         pendingShaker->shakerOpenSprite->SetVisibility(false);
         pendingShaker->GetSprite()->SetVisibility(true); 
     }
     else if (pendingBlender)
+	{
         pendingBlender->resetDrink();
+		pendingShaker->StopPouring();
+	}
 }
 
 void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,

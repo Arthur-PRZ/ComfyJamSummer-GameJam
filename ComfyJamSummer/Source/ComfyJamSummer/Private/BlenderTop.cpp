@@ -135,7 +135,8 @@ void ABlenderTop::OnIngredientOverlap(UPrimitiveComponent* OverlappedComp,
 
 void ABlenderTop::StartPouring()
 {
-    SetActorRotation(FRotator(0.f, 0.f, 0.f)); 
+	if (isPouring)
+        return;
     isPouring = true;
 }
 
@@ -151,7 +152,6 @@ void ABlenderTop::Tick(float DeltaTime)
 
         if (isPouring)
     {
-        // Vérifie si on est encore dans une hitbox
         TArray<AActor*> overlappingActors;
         GetOverlappingActors(overlappingActors);
         
@@ -168,13 +168,13 @@ void ABlenderTop::Tick(float DeltaTime)
         if (!stillOverlapping)
         {
             StopPouring();
-            return;
-        }
+        } else {
+			FRotator CurrentRotation = GetActorRotation();
+			float TargetPitch = -70.f;
+			CurrentRotation.Pitch = FMath::FInterpTo(CurrentRotation.Pitch, TargetPitch, DeltaTime, 3.f);
+			SetActorRotation(CurrentRotation);
+		}
         
-        FRotator CurrentRotation = GetActorRotation();
-        float TargetPitch = -70.f;
-        CurrentRotation.Pitch = FMath::FInterpTo(CurrentRotation.Pitch, TargetPitch, DeltaTime, 3.f);
-        SetActorRotation(CurrentRotation);
     }
     if (GetWorld()->GetTimerManager().IsTimerActive(IngredientTimer) && timerWidgetInstance)
     {
