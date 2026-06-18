@@ -69,9 +69,11 @@ void AGlass::FillGlass()
 			badDrinkSprite->SetVisibility(true);
 			break;
 		case EDrinks::gasoline:
+            UE_LOG(LogTemp, Warning, TEXT("Gasoline"));
 			straightGasolineSprite->SetVisibility(true);
 			break;
 		default: 
+            UE_LOG(LogTemp, Warning, TEXT("DEFAULT"));
 			break;
     }
 	
@@ -100,20 +102,16 @@ void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
 {
     AMyPlayerController *pc = Cast<AMyPlayerController>(GetWorld()->GetFirstPlayerController());
 
-    UE_LOG(LogTemp, Warning, TEXT("MOAUIS"));
 
 
-    UE_LOG(LogTemp, Warning, TEXT("OUI"));
     if (OtherActor && OtherActor->IsA(ABlenderTop::StaticClass()) && isFill == false && !pc->getIsDragging())
     {
         pendingBlender = Cast<ABlenderTop>(OtherActor);
         drink = pendingBlender->getDrink();
 
-        UE_LOG(LogTemp, Warning, TEXT("IN"));
 
         if (pendingBlender->getDrink() == EDrinks::noDrink)
             return ;
-        UE_LOG(LogTemp, Warning, TEXT("SIU"));
         pendingBlender->StartPouring();
         if (drink != EDrinks::noDrink)
 		{
@@ -143,7 +141,9 @@ void AGlass::OnBlenderOverlap(UPrimitiveComponent* OverlappedComp,
         if (ingredient && ingredient->getIngredientType() == EIngredientsTypes::gasoline)
         {
             pendingIngredient = ingredient;
+
             drink = EDrinks::gasoline;
+            pendingIngredient->StartPouring(false);
             GetWorld()->GetTimerManager().SetTimer(glassTimer, this, &AGlass::FillGlass, timerDuration, false);
 			StartPourSound();
         }
@@ -171,6 +171,7 @@ void AGlass::OnBlenderEndOverlap(UPrimitiveComponent* OverlappedComp,
     }
 	else if (OtherActor == pendingIngredient)
 	{
+        pendingIngredient->StopPouring();
 		GetWorld()->GetTimerManager().ClearTimer(glassTimer);
 		pendingIngredient = nullptr;
 		StopPourSound();
@@ -181,7 +182,6 @@ EDrinks AGlass::getDrink() const
 {
     return drink;
 }
-
 
 void AGlass::Tick(float DeltaTime)
 {

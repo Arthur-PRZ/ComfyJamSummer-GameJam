@@ -149,9 +149,8 @@ void ABlenderTop::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-        if (isPouring)
+    if (isPouring)
     {
-        // Vérifie si on est encore dans une hitbox
         TArray<AActor*> overlappingActors;
         GetOverlappingActors(overlappingActors);
         
@@ -172,7 +171,7 @@ void ABlenderTop::Tick(float DeltaTime)
         }
         
         FRotator CurrentRotation = GetActorRotation();
-        float TargetPitch = -70.f;
+        float TargetPitch = 70.f;
         CurrentRotation.Pitch = FMath::FInterpTo(CurrentRotation.Pitch, TargetPitch, DeltaTime, 3.f);
         SetActorRotation(CurrentRotation);
     }

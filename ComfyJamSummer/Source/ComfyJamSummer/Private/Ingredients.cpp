@@ -3,6 +3,7 @@
 #include "Ingredients.h"
 #include "Kismet/GameplayStatics.h"
 #include "Shaker.h"
+#include "Glass.h"
 #include "BlenderTop.h"
 #include "Alien.h"
 
@@ -99,7 +100,7 @@ void AIngredients::Tick(float DeltaTime)
         bool stillOverlapping = false;
         for (AActor* actor : overlappingActors)
         {
-            if (actor->IsA(ABlenderTop::StaticClass()) || actor->IsA(AShaker::StaticClass()))
+            if (actor->IsA(ABlenderTop::StaticClass()) || actor->IsA(AShaker::StaticClass()) || actor->IsA(AGlass::StaticClass()))
             {
                 stillOverlapping = true;
                 break;
@@ -115,7 +116,7 @@ void AIngredients::Tick(float DeltaTime)
         float TargetPitch = 0.0f;
         if (ingredientType == EIngredientsTypes::gasoline)
         {
-            TargetPitch = -70.f;
+            TargetPitch = 70.f;
         }    
         else
         {

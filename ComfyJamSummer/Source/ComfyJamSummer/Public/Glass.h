@@ -45,6 +45,7 @@ class COMFYJAMSUMMER_API AGlass : public AMoveableSprite
 		bool bFromSweep,
 		const FHitResult& SweepResult);
 	
+
 	UFUNCTION()
 	void OnBlenderEndOverlap(UPrimitiveComponent* OverlappedComp,
 		AActor* OtherActor,
