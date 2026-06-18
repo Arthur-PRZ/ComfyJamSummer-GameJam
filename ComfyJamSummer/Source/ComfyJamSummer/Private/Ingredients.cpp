@@ -78,7 +78,6 @@ void AIngredients::OnReleased()
 
 void AIngredients::StartPouring(bool bShouldTiltLeft)
 {
-    SetActorRotation(FRotator(0.f, 0.f, 0.f)); 
     isPouring = true;
     this->bTiltLeft = bShouldTiltLeft;
 }

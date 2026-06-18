@@ -44,6 +44,7 @@ void AShaker::BeginPlay()
 
 void AShaker::ValidateIngredient()
 {
+    pendingIngredient->StopPouring();
     if (!pendingIngredient)
         return ;
     EIngredientsTypes ingredientType = pendingIngredient->getIngredientType();
@@ -167,9 +168,6 @@ void AShaker::resetDrink()
 
 void AShaker::StartPouring(bool bShouldTiltLeft)
 {
-    if (isPouring)
-        return;
-
     isPouring = true;
     this->bTiltLeft = bShouldTiltLeft;
 }
