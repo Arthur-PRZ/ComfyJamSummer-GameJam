@@ -5,6 +5,7 @@
 #include "Customer.h"
 #include "MyGameInstance.h"
 #include "Glass.h"
+#include "Trash.h"
 #include "Ingredients.h"
 
 void AMyPlayerController::BeginPlay()
@@ -104,6 +105,14 @@ void AMyPlayerController::OnClickReleased()
         if (blender->IsOverBlender())
         {
             blender->FusionBlender();
+        }
+    }
+
+    if (ATrash* trash = Cast<ATrash>(UGameplayStatics::GetActorOfClass(GetWorld(), ATrash::StaticClass())))
+    {
+        if (trash->getIsOverTrash())
+        {
+            trash->Throw();
         }
     }
 
