@@ -210,7 +210,8 @@ void AGlass::Tick(float DeltaTime)
 void AGlass::StartPourSound()
 {
     if (pourSound && !pourAudio)
-        pourAudio = UGameplayStatics::SpawnSound2D(this, pourSound);
+        if (UMyGameInstance* GI = Cast<UMyGameInstance>(GetGameInstance()))
+            pourAudio = GI->SpawnSFX(pourSound, 3.f);
 }
 
 void AGlass::StopPourSound()
