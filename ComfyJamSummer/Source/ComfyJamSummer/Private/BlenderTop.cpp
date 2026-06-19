@@ -169,7 +169,7 @@ void ABlenderTop::Tick(float DeltaTime)
             StopPouring();
         } else {
 			FRotator CurrentRotation = GetActorRotation();
-			float TargetPitch = -70.f;
+			float TargetPitch = 70.f;
 			CurrentRotation.Pitch = FMath::FInterpTo(CurrentRotation.Pitch, TargetPitch, DeltaTime, 3.f);
 			SetActorRotation(CurrentRotation);
 		}
