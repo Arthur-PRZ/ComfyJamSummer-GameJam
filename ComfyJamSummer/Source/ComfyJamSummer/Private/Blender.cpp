@@ -42,6 +42,7 @@ void ABlender::BeginPlay()
 
     blenderTopRef = Cast<ABlenderTop>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlenderTop::StaticClass()));
     isBlenderFusion = true;
+    isOverBlender = true;
     timerWidgetInstance->SetWidgetClass(timerWidgetClass);
 }
 
