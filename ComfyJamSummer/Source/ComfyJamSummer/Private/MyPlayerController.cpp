@@ -124,6 +124,12 @@ void AMyPlayerController::OnClickReleased()
 {
 	if (AIngredients* Ingredient = Cast<AIngredients>(SelectedActor))
 		Ingredient->OnReleased();
+    if (SelectedActor)
+    {
+        FVector NewLocation = SelectedActor->GetActorLocation();
+        NewLocation.Y = initialLocation.Y;
+        SelectedActor->SetActorLocation(NewLocation);
+    }
     if (ABlender* blender = Cast<ABlender>(UGameplayStatics::GetActorOfClass(GetWorld(), ABlender::StaticClass())))
     {
         if (blender->IsOverBlender())
@@ -159,6 +165,8 @@ void AMyPlayerController::OnClickReleased()
 
     if (SelectedActor)
     {
+
+
         FVector Loc = SelectedActor->GetActorLocation();
         if (Loc.X < minX || Loc.X > maxX || Loc.Z < minZ || Loc.Z > maxZ)
             SelectedActor->SetActorLocation(initialLocation);
@@ -183,6 +191,7 @@ void AMyPlayerController::Tick(float DeltaTime)
         FVector NewLocation = SelectedActor->GetActorLocation();
         NewLocation.X = WorldLocation.X + GrabOffset.X;
         NewLocation.Z = WorldLocation.Z + GrabOffset.Z;
+        NewLocation.Y = initialLocation.Y - 5.f;
         SelectedActor->SetActorLocation(NewLocation);
     }
 }
