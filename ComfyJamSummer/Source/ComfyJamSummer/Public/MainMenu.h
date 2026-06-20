@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Components/AudioComponent.h"
+#include "Components/Image.h"
 #include "MainMenu.generated.h"
 
 /**
@@ -28,11 +29,26 @@ class COMFYJAMSUMMER_API UMainMenu : public UUserWidget
 		UPROPERTY(meta = (BindWidget))
 		UButton* Button_Quit;
 
+		UPROPERTY(meta = (BindWidget))
+		UButton* Button_HowToPlay;
+
+		UPROPERTY(meta = (BindWidget))
+		UButton* Button_Return;
+
+		UPROPERTY(meta = (BindWidget))
+		UImage* Image_HowToPlay;
+
 		UFUNCTION()
 		void OnPlayClicked();
 
 		UFUNCTION()
 		void OnQuitClicked();
+		
+		UFUNCTION()
+		void OnReturnClicked();
+
+		UFUNCTION()
+		void OnHTPClicked();
 
 		UPROPERTY(EditAnywhere)
 		UAudioComponent* MusicComponent;
