@@ -17,6 +17,8 @@ bool ATrash::getIsOverTrash() const
 
 void ATrash::Throw()
 {
+    if (UMyGameInstance* GI = Cast<UMyGameInstance>(GetGameInstance()))
+        GI->SpawnSFX(trashSound, 1.4f);
     AGlass* glass = Cast<AGlass>(UGameplayStatics::GetActorOfClass(GetWorld(), AGlass::StaticClass()));
     UE_LOG(LogTemp, Warning, TEXT("Destroy"));
     glass->Destroy();

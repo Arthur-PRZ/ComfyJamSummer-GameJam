@@ -37,6 +37,9 @@ class COMFYJAMSUMMER_API ATrash : public AMoveableSprite
 	public:
 
 		ATrash();
+
+		UPROPERTY(EditAnywhere, Category = "Audio")
+		USoundBase* trashSound;
 	
 		bool getIsOverTrash() const;
 		void Throw();

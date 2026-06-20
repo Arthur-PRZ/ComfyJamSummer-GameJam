@@ -30,6 +30,9 @@ private:
     
     void firedEnd();
     void policeEnd();
+    
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* loseLifeSound;
 
 
 public:

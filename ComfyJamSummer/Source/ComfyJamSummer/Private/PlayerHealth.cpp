@@ -39,6 +39,8 @@ void APlayerHealth::LoseLife(EDeathCause cause)
 
     lives--;
     UpdateHearts();
+    if (UMyGameInstance* GI = Cast<UMyGameInstance>(GetGameInstance()))
+        GI->SpawnSFX(loseLifeSound, 1.3f);
     if (arrestCount == 2)
     {
         BackgroundActorRef = Cast<ABackgroundActor>(UGameplayStatics::GetActorOfClass(GetWorld(), ABackgroundActor::StaticClass()));

@@ -41,7 +41,7 @@ void AAlien::StartLookingAway()
 	float Duration = FMath::RandRange(LookAwayTimeMin, LookAwayTimeMax);
 
 	const float lead = FMath::Min(warningLeadTime, Duration);
-    GetWorldTimerManager().SetTimer(WarningTimer, this, &AAlien::PlayTurnWarning, Duration - lead, false);
+    GetWorldTimerManager().SetTimer(WarningTimer, this, &AAlien::PlayTurnWarning, 1.0f, false);
 
 	GetWorldTimerManager().SetTimer(StateTimer, this, &AAlien::StartWatching, Duration, false);
 }
