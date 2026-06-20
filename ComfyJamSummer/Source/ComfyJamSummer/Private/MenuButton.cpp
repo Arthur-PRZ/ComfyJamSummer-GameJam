@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "MenuButton.h"
 #include "Kismet/GameplayStatics.h"
 #include "MyGameInstance.h"
-#include "MenuButton.h"
 
 void UMenuButton::NativeConstruct()
 {
