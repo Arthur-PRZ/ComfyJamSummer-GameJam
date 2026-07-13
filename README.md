@@ -24,9 +24,9 @@ Or don't.
 
 There are **3 different endings** depending on the choices make. The game doesn't tell which path leads where.
 
-![Screenshot](https://img.itch.zone/aW1hZ2UvNDY4MzE5MS8yNzk3MDcxNi5wbmc=/original/8p%2FvHX.png)
-
 ![Screenshot](https://img.itch.zone/aW1hZ2UvNDY4MzE5MS8yNzk3MDcxNy5wbmc=/original/qyN8FC.png)
+
+![Screenshot](https://img.itch.zone/aW1hZ2UvNDY4MzE5MS8yNzk3MDcxNi5wbmc=/original/8p%2FvHX.png)
 
 ---
 
